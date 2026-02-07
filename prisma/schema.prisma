@@ -1,0 +1,122 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String              @id
+  name          String
+  email         String              @unique
+  emailVerified Boolean             @default(false)
+  image         String?
+  role          Role                @default(USER)
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+  accounts      Account[]
+  registrations EventRegistration[]
+  sessions      Session[]
+
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
+}
+
+model EventCategory {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique @default(cuid())
+  description String?
+  image       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  events      Event[]
+
+  @@map("event_category")
+}
+
+model Event {
+  id                 String              @id @default(cuid())
+  title              String
+  slug               String              @unique @default(cuid())
+  location           String?
+  description        String?
+  image              String?
+  startDate          DateTime            @default(now())
+  endDate            DateTime?
+  termsAndConditions String?
+  categoryId         String
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  category           EventCategory       @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  registrations      EventRegistration[]
+
+  @@map("event")
+}
+
+model EventRegistration {
+  id        String   @id @default(cuid())
+  userId    String
+  eventId   String
+  createdAt DateTime @default(now())
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, eventId])
+  @@index([userId])
+  @@index([eventId])
+  @@map("event_registration")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
