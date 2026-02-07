@@ -124,11 +124,11 @@ const CustomCursor = () => {
     <>
       <div
         ref={cursorRef}
-        className="fixed top-0 left-0 w-8 h-8 rounded-full border border-black pointer-events-none z-[9999]"
+        className="fixed top-0 left-0 w-8 h-8 rounded-full border border-black pointer-events-none z-9999"
       />
       <div
         ref={dotRef}
-        className={`fixed top-0 left-0 w-1.5 h-1.5 rounded-full pointer-events-none z-[9999] transition-colors duration-300 ${isHovering ? 'bg-[#FF5722]' : 'bg-black'}`}
+        className={`fixed top-0 left-0 w-1.5 h-1.5 rounded-full pointer-events-none z-9999 transition-colors duration-300 ${isHovering ? 'bg-[#FF5722]' : 'bg-black'}`}
       />
     </>
   );

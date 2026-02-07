@@ -232,7 +232,7 @@ export default function EventManager({ category, initialEvents }: { category: Ca
             >
                 <div className="flex items-start gap-4">
                     {/* Thumbnail */}
-                    <div className="w-16 h-16 rounded-lg bg-gray-100 flex-shrink-0 overflow-hidden flex items-center justify-center">
+                    <div className="w-16 h-16 rounded-lg bg-gray-100 shrink-0 overflow-hidden flex items-center justify-center">
                          {event.image ? (
                              <img src={event.image} alt={event.title} className="w-full h-full object-cover" />
                          ) : (

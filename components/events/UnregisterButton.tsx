@@ -69,7 +69,7 @@ export default function UnregisterButton({ eventId }: UnregisterButtonProps) {
       <AnimatePresence>
         {showConfirm && (
           <Portal>
-            <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 backdrop-blur-sm">
+            <div className="fixed inset-0 z-9999 flex items-center justify-center p-4 backdrop-blur-sm">
                 <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
