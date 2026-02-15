@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { Mail, Phone, MapPin, Instagram, Linkedin, Twitter, Facebook } from "lucide-react";
+import { Mail, MapPin, Instagram } from "lucide-react";
 
 const Footer = () => {
   return (
@@ -13,9 +13,7 @@ const Footer = () => {
               Fem<span className="text-[#FF5722]">Flare</span>
             </Link>
              <div className="flex items-center gap-4">
-              <SocialLink href="#" icon={<Instagram size={18} />} />
-              <SocialLink href="#" icon={<Linkedin size={18} />} />
-              <SocialLink href="#" icon={<Twitter size={18} />} />
+              <SocialLink href="https://www.instagram.com/kl_femflare" icon={<Instagram size={18} />} />
             </div>
         </div>
 
@@ -30,10 +28,7 @@ const Footer = () => {
               Celebrating the spirit of womanhood at KL University.
             </p>
             <div className="flex items-center gap-4">
-              <SocialLink href="#" icon={<Instagram size={18} />} />
-              <SocialLink href="#" icon={<Linkedin size={18} />} />
-              <SocialLink href="#" icon={<Twitter size={18} />} />
-              <SocialLink href="#" icon={<Facebook size={18} />} />
+              <SocialLink href="https://www.instagram.com/kl_femflare" icon={<Instagram size={18} />} />
             </div>
           </div>
 
@@ -56,13 +51,9 @@ const Footer = () => {
               Contact
             </h3>
             <div className="space-y-2 md:space-y-4 flex flex-col items-center md:items-start">
-               <a href="mailto:contact@femflare.klu.in" className="flex items-center gap-2 text-gray-600 hover:text-[#FF5722] transition-colors">
+               <a href="mailto:femflare@kluniversity.in" className="flex items-center gap-2 text-gray-600 hover:text-[#FF5722] transition-colors">
                   <Mail size={16} className="text-[#FF5722] shrink-0" />
-                  <span className="text-xs md:text-sm">Email Us</span>
-               </a>
-               <a href="tel:+911234567890" className="flex items-center gap-2 text-gray-600 hover:text-[#FF5722] transition-colors">
-                  <Phone size={16} className="text-[#FF5722] shrink-0" />
-                   <span className="text-xs md:text-sm">Call Us</span>
+                  <span className="text-xs md:text-sm">femflare@kluniversity.in</span>
                </a>
                 {/* Desktop Address only */}
                 <div className="hidden md:flex items-start gap-3 text-gray-600">
@@ -99,10 +90,7 @@ const Footer = () => {
           <p className="text-[10px] md:text-xs text-center md:text-left text-gray-400 uppercase tracking-wider">
             &copy; 2026 FemFlare.
           </p>
-          <div className="hidden md:flex items-center gap-6 text-xs text-gray-500 uppercase tracking-wider">
-            <Link href="/privacy" className="hover:text-[#FF5722] transition-colors">Privacy Policy</Link>
-            <Link href="/terms" className="hover:text-[#FF5722] transition-colors">Terms of Service</Link>
-          </div>
+
         </div>
       </div>
     </footer>
