@@ -20,6 +20,14 @@ model User {
   registrations EventRegistration[]
   sessions      Session[]
 
+  // Onboarding fields
+  phoneNumber   String?
+  address       String?
+  college       String?
+  studentId     String? // ID Number of the Participant
+  department    String?
+  isOnboarded   Boolean             @default(false)
+
   @@map("user")
 }
 

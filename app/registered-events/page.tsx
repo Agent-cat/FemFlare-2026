@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 import { ArrowLeft, Calendar } from 'lucide-react';
 import Link from 'next/link';
 import { auth } from '@/lib/auth';
@@ -20,8 +21,20 @@ export default async function RegisteredEventsPage() {
     const events = registrations || [];
 
     return (
-        <div className="min-h-screen bg-[#F1EBE0] text-[#1a1a1a] font-sans pt-24 md:pt-32">
-            <main className="w-full pb-24 relative overflow-hidden">
+        <div className="relative min-h-screen bg-[#F1EBE0] text-[#1a1a1a] font-sans pt-24 md:pt-32 overflow-hidden selection:text-white">
+
+            {/* Background Image Layer */}
+            <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] h-[90vh] z-0 opacity-[0.12] mix-blend-multiply pointer-events-none">
+                <Image
+                    src="/images/2.png"
+                    alt="Background Texture"
+                    fill
+                    className="object-contain grayscale"
+                    priority
+                />
+            </div>
+
+            <main className="w-full pb-24 relative overflow-hidden z-10">
                 <div className="w-full max-w-screen-2xl mx-auto px-6 relative z-10">
 
                     {/* Back Link */}

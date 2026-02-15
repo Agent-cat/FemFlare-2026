@@ -32,7 +32,31 @@ export const auth = betterAuth({
                 required: false,
                 defaultValue: "USER"
             },
-
+            phoneNumber: {
+                type: "string",
+                required: false,
+            },
+            address: {
+                type: "string",
+                required: false,
+            },
+            college: {
+                type: "string",
+                required: false,
+            },
+            studentId: {
+                type: "string",
+                required: false,
+            },
+            department: {
+                type: "string",
+                required: false,
+            },
+            isOnboarded: {
+                type: "boolean",
+                required: false,
+                defaultValue: false
+            }
         }
     }
 

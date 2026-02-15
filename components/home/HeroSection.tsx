@@ -6,6 +6,7 @@ import { ArrowDown } from 'lucide-react';
 import ScrollSequence from './ScrollSequence';
 import Link from 'next/link';
 
+
 const HeroSection = () => {
   const containerRef = useRef<HTMLElement>(null);
 
@@ -38,7 +39,7 @@ const HeroSection = () => {
 
                 {/* Main Content Area */}
                 <div className="flex-1 flex flex-col items-center justify-center text-center mt-10 md:mt-0">
-                <h1 className="flex flex-col items-center pt-52 leading-none font-poppins">
+                <h1 className="flex flex-col items-center pt-24 md:pt-52 leading-none font-poppins">
                     <div className="transform text-[#FF5722] text-xs font-semibold">
                     KL UNIVERSITY'S
                     </div>
@@ -71,36 +72,41 @@ const HeroSection = () => {
             </div>
 
             {/* Bottom Section */}
-            <div className="w-full p-6 md:p-12 flex flex-col md:flex-row justify-between items-end md:items-end">
+            <div className="w-full p-6 md:p-12 flex flex-col md:flex-row justify-end md:justify-between items-center md:items-end gap-8 md:gap-0 pb-12 md:pb-12">
 
                 {/* Date and Tagline */}
-                <div className="mb-8 md:mb-0">
-                <h2 className="text-[#FF5722] text-5xl md:text-6xl font-bold tracking-tighter">
-                    27-03-2026
-                </h2>
-                <div className="h-1 w-full bg-[#FF5722] my-2"></div>
-                <p className="font-bold text-sm md:text-base tracking-wide uppercase mt-2 mix-blend-difference text-white/80">
-                    KLUNIVERSITY <br />FEMFLAIR 2026
-                </p>
+                <div className="flex flex-col items-center md:items-start order-2 md:order-1">
+                  <div className="flex flex-col items-center md:items-start text-[#FF5722] animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300">
+                    <h2 className="flex items-center gap-2 md:gap-3 text-3xl md:text-5xl font-oswald font-bold tracking-tight uppercase">
+                        24 MARCH <span className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-[#FF5722]"></span> <span className="text-transparent stroke-text">2026</span>
+                    </h2>
+                  </div>
+                  <div className="h-1 w-16 md:w-24 bg-[#FF5722] mt-3 mb-2 rounded-full"></div>
+                  <p className="font-bold text-[10px] md:text-xs tracking-[0.2em] uppercase mix-blend-difference text-white/90 font-oswald text-center md:text-left">
+                      KL UNIVERSITY • FEMFLAIR
+                  </p>
                 </div>
 
-                {/* Center Arrow */}
-                <div className="absolute left-1/2 bottom-12 transform -translate-x-1/2 mb-8 md:mb-0 text-[#FF5722]">
-                <ArrowDown size={48} strokeWidth={1.5} />
+                {/* Center Arrow - Hidden on very small screens if needed, or adjusted */}
+                <div className="order-3 md:order-2 md:absolute md:left-1/2 md:bottom-12 md:transform md:-translate-x-1/2 text-[#FF5722] mt-4 md:mt-0">
+                    <ArrowDown size={32} className="md:w-12 md:h-12" strokeWidth={1.5} />
                 </div>
 
                 {/* Right Description */}
-                <div className="max-w-xs text-right">
-                    <div className="text-[#FF5722] font-bold text-sm tracking-widest mb-2">
+                <div className="max-w-xs text-center md:text-right order-1 md:order-3 relative">
+                    <div className="text-[#FF5722] font-bold text-xs md:text-sm tracking-widest mb-2">
                         KL UNIVERSITY <span className="text-slate-600 font-normal">— FEMFLAIR</span>
                     </div>
-                    <p className="text-slate-800 text-xs leading-relaxed font-medium">
-                        A vibrant women-led community.
- celebrates confidence, creativity, and self-expression.
-Together, we inspire growth, leadership, and change
+                    <p className="text-slate-800 text-xs leading-relaxed font-medium md:ml-auto">
+                        A vibrant women-led community.<br className="hidden md:block"/>
+                        celebrates confidence, creativity, and self-expression.<br className="hidden md:block"/>
+                        Together, we inspire growth, leadership, and change
                     </p>
                 </div>
             </div>
+
+
+
         </div>
       </div>
 

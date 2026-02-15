@@ -19,34 +19,62 @@ const ScrollSequence: React.FC<ScrollSequenceProps> = ({
 
   // Preload images with priority for the first frame
   useEffect(() => {
-    let loadedCount = 0;
+    let isMounted = true;
     const images: HTMLImageElement[] = [];
-
-    // Prioritize first frame
-    const firstImg = new Image();
-    const firstFilename = `frame_${"1".padStart(4, "0")}.jpg`;
-    firstImg.src = `/extracted/${firstFilename}`;
-    firstImg.onload = () => {
-      setFirstFrameLoaded(true);
-      loadedCount++;
-      if (loadedCount === frameCount) setImagesLoaded(true);
-    };
-    images[0] = firstImg;
-
-    // Load remaining frames in batches/background
-    for (let i = 2; i <= frameCount; i++) {
-      const img = new Image();
-      const filename = `frame_${i.toString().padStart(4, "0")}.jpg`;
-      img.src = `/extracted/${filename}`;
-      img.onload = () => {
-        loadedCount++;
-        if (loadedCount === frameCount) {
-          setImagesLoaded(true);
-        }
-      };
-      images[i - 1] = img;
-    }
     imagesRef.current = images;
+
+    // Helper to load a single image
+    const loadFrame = (index: number) => {
+        return new Promise<void>((resolve) => {
+            const img = new Image();
+            const filename = `frame_${(index + 1).toString().padStart(4, "0")}.jpg`;
+            img.src = `/extracted/${filename}`;
+            img.onload = () => {
+                if(isMounted) {
+                    images[index] = img;
+                    if (index === 0) setFirstFrameLoaded(true);
+                    if (images.filter(x => x).length === frameCount) setImagesLoaded(true);
+                }
+                resolve();
+            };
+            img.onerror = () => resolve(); // Resolve even on error to continue
+            // If already cached/loaded instantly
+            if (img.complete) {
+                if (isMounted) images[index] = img;
+                if (index === 0) setFirstFrameLoaded(true);
+                resolve();
+            }
+        });
+    };
+
+    const loadImages = async () => {
+        // 1. Load first frame ASAP (Priority)
+        await loadFrame(0);
+        if (!isMounted) return;
+
+        // 2. Load next 29 frames (High Priority for initial scroll)
+        const initialBatch = Array.from({ length: 29 }, (_, i) => i + 1);
+        await Promise.all(initialBatch.map(i => loadFrame(i)));
+        if (!isMounted) return;
+
+        // 3. Load the rest in chunks to avoid network congestion
+        const remainingStart = 30;
+        const chunkSize = 20;
+
+        for (let i = remainingStart; i < frameCount; i += chunkSize) {
+            if (!isMounted) return;
+            const chunk = Array.from({ length: Math.min(chunkSize, frameCount - i) }, (_, j) => i + j);
+            await Promise.all(chunk.map(idx => loadFrame(idx)));
+            // Small delay to yield to main thread/other resources
+            await new Promise(r => setTimeout(r, 50));
+        }
+    };
+
+    loadImages();
+
+    return () => {
+        isMounted = false;
+    };
   }, [frameCount]);
 
   // Handle scroll progress
@@ -129,7 +157,7 @@ const ScrollSequence: React.FC<ScrollSequenceProps> = ({
   return (
     <canvas
       ref={canvasRef}
-      className="fixed top-0 left-0 w-full h-full object-cover z-0"
+      className="absolute top-0 left-0 w-full h-full object-cover z-0"
     />
   );
 };

@@ -43,7 +43,7 @@ export default function RegisterButton({ eventId, initialIsRegistered, termsAndC
   const proceedWithRegistration = async () => {
     setShowTerms(false);
     setIsLoading(true);
-    const res = await registerForEvent(eventId, session?.user.id as string);
+    const res = await registerForEvent(session?.user.id as string, eventId);
     setIsLoading(false);
 
     if (res.success) {

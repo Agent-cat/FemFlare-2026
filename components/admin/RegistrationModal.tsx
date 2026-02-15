@@ -1,8 +1,10 @@
 "use client";
 
 import React from 'react';
-import { X, User, Calendar, Mail } from 'lucide-react';
+
+import { X, User, Calendar, Mail, Download } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { downloadExcel } from '@/lib/excel';
 
 interface Registration {
     id: string;
@@ -25,6 +27,19 @@ interface RegistrationModalProps {
 
 export default function RegistrationModal({ isOpen, onClose, eventName, registrations, isLoading }: RegistrationModalProps) {
     if (!isOpen) return null;
+
+    const handleDownload = () => {
+        const data = registrations.map(reg => ({
+            "Student Name": reg.user.name,
+            "Email": reg.user.email,
+            "ID Number": (reg.user as any).studentId || "N/A",
+            "College": (reg.user as any).college || "N/A",
+            "Department": (reg.user as any).department || "N/A",
+            "Mobile": (reg.user as any).phoneNumber || "N/A",
+            "Registration Date": new Date(reg.createdAt).toLocaleString(),
+        }));
+        downloadExcel(data, `${eventName.replace(/\s+/g, '_')}_Registrations`);
+    };
 
     return (
         <AnimatePresence>
@@ -101,6 +116,13 @@ export default function RegistrationModal({ isOpen, onClose, eventName, registra
                     <div className="p-4 border-t border-gray-100 bg-gray-50/50 flex justify-between items-center text-sm text-gray-500">
                         <span>Total: <strong className="text-gray-900">{registrations.length}</strong> students</span>
                         <div className="flex gap-2">
+                             <button
+                                onClick={handleDownload}
+                                disabled={registrations.length === 0}
+                                className="flex items-center gap-2 px-4 py-2 bg-[#FF5722] text-white rounded-lg hover:bg-[#F4511E] transition-colors font-medium font-oswald uppercase tracking-wide disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                <Download className="w-4 h-4" /> Download Excel
+                            </button>
                              <button
                                 onClick={onClose}
                                 className="px-4 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors font-medium text-gray-700"

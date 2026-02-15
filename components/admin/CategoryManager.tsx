@@ -69,12 +69,12 @@ export default function CategoryManager({ initialCategories }: { initialCategori
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-            <h1 className="text-3xl font-bold text-gray-900">Event Categories</h1>
-            <p className="text-gray-500 mt-1">Manage your event categories and their contents.</p>
+            <h1 className="text-4xl font-oswald font-bold text-gray-900 uppercase tracking-tight">Event Categories</h1>
+            <p className="text-gray-600 mt-2 font-sans text-lg">Manage your event categories and their contents.</p>
         </div>
         <button
             onClick={() => { setIsCreating(true); setEditingCategory(null); }}
-            className="flex items-center gap-2 bg-[#FF5722] text-white px-6 py-2.5 rounded-xl font-bold hover:bg-[#F4511E] transition-colors"
+            className="flex items-center gap-2 bg-[#FF5722] text-white px-6 py-3 rounded-full font-bold font-oswald uppercase tracking-wide hover:bg-[#F4511E] transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
         >
             <Plus className="w-5 h-5" />
             New Category
@@ -83,45 +83,45 @@ export default function CategoryManager({ initialCategories }: { initialCategori
 
       {/* Create/Edit Form */}
       {isCreating && (
-        <div className="mb-8 p-6 bg-white rounded-xl border border-gray-200 shadow-sm animate-in fade-in slide-in-from-top-4">
-             <h3 className="text-lg font-bold mb-4">{editingCategory ? "Edit Category" : "Create New Category"}</h3>
-             <form action={handleSubmit} className="space-y-4">
+        <div className="mb-10 p-8 bg-[#EBE5DB]/50 backdrop-blur-sm rounded-3xl border border-[#DCCEB8] shadow-xl animate-in fade-in slide-in-from-top-4">
+             <h3 className="text-2xl font-oswald font-bold mb-6 uppercase text-gray-900">{editingCategory ? "Edit Category" : "Create New Category"}</h3>
+             <form action={handleSubmit} className="space-y-6">
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+                    <label className="block text-sm font-bold text-gray-700 mb-2 font-oswald uppercase tracking-wide">Title</label>
                     <input
                         name="title"
                         defaultValue={editingCategory?.title}
                         required
-                        className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#FF5722]/20 focus:border-[#FF5722]"
+                        className="w-full px-5 py-3 rounded-xl border border-[#DCCEB8] bg-white focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#FF5722]/20 focus:border-[#FF5722] transition-all font-sans"
                         placeholder="e.g. Technology"
                     />
                 </div>
                 <div>
-                     <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                     <label className="block text-sm font-bold text-gray-700 mb-2 font-oswald uppercase tracking-wide">Description</label>
                      <textarea
                         name="description"
                         defaultValue={editingCategory?.description || ''}
-                        className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#FF5722]/20 focus:border-[#FF5722]"
+                        className="w-full px-5 py-3 rounded-xl border border-[#DCCEB8] bg-white focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#FF5722]/20 focus:border-[#FF5722] transition-all font-sans"
                         placeholder="Short description..."
                         rows={3}
                     />
                 </div>
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Cover Image</label>
+                    <label className="block text-sm font-bold text-gray-700 mb-2 font-oswald uppercase tracking-wide">Cover Image</label>
                     <div className="flex items-center gap-4">
                         <input
                             type="file"
                             name="image"
                             accept="image/*"
-                            className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[#FF5722]/10 file:text-[#FF5722] hover:file:bg-[#FF5722]/20"
+                            className="w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-6 file:rounded-full file:border-0 file:text-sm file:font-bold file:bg-[#FF5722]/10 file:text-[#FF5722] hover:file:bg-[#FF5722]/20 transition-colors cursor-pointer"
                         />
                     </div>
-                    {editingCategory?.image && <p className="text-xs text-green-600 mt-1">Current image exists. Upload new to replace.</p>}
+                    {editingCategory?.image && <p className="text-xs text-green-600 mt-2 font-medium">Current image exists. Upload new to replace.</p>}
                 </div>
 
-                <div className="flex justify-end gap-3 pt-2">
-                    <button type="button" onClick={() => { setIsCreating(false); setEditingCategory(null); }} className="px-4 py-2 text-gray-600 font-medium hover:bg-gray-100 rounded-lg">Cancel</button>
-                    <button type="submit" disabled={isLoading} className="flex items-center gap-2 px-6 py-2 bg-[#FF5722] text-white font-bold rounded-lg hover:bg-[#F4511E] disabled:opacity-50">
+                <div className="flex justify-end gap-3 pt-4">
+                    <button type="button" onClick={() => { setIsCreating(false); setEditingCategory(null); }} className="px-6 py-3 text-gray-600 font-bold font-oswald uppercase tracking-wide hover:bg-gray-100 rounded-full transition-colors">Cancel</button>
+                    <button type="submit" disabled={isLoading} className="flex items-center gap-2 px-8 py-3 bg-[#FF5722] text-white font-bold font-oswald uppercase tracking-wide rounded-full hover:bg-[#F4511E] disabled:opacity-50 shadow-lg hover:shadow-xl transition-all">
                         {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
                         {editingCategory ? "Update Category" : "Create Category"}
                     </button>
@@ -131,28 +131,29 @@ export default function CategoryManager({ initialCategories }: { initialCategori
       )}
 
       {/* Categories Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {initialCategories.map((cat) => (
             <div
                 key={cat.id}
                 onClick={() => router.push(`/admin/events/${cat.id}`)}
-                className="group bg-white p-6 rounded-2xl border border-gray-200 hover:border-[#FF5722]/50 hover:shadow-lg cursor-pointer transition-all duration-300 relative"
+                className="group bg-white p-6 rounded-xl border border-gray-200 hover:border-[#FF5722] hover:shadow-md cursor-pointer transition-all duration-200 relative"
             >
-                <div className="flex items-center justify-between mb-4">
-                    <div className="w-12 h-12 bg-[#FF5722]/10 rounded-full flex items-center justify-center text-[#FF5722] group-hover:bg-[#FF5722] group-hover:text-white transition-colors">
-                        {cat.image ? <ImageIcon className="w-6 h-6" /> : <Folder className="w-6 h-6" />}
+                <div className="flex items-start justify-between mb-4">
+                    <div className="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center text-gray-400 group-hover:text-[#FF5722] transition-colors">
+                        {cat.image ? <ImageIcon className="w-5 h-5" /> : <Folder className="w-5 h-5" />}
                     </div>
+
                     <div className="flex gap-2">
-                         <button
+                            <button
                             onClick={(e) => startEdit(e, cat)}
-                            className="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-blue-500 transition-colors"
+                            className="p-2 text-gray-400 hover:text-gray-900 transition-colors"
                             title="Edit"
                         >
                             <Edit2 className="w-4 h-4" />
                         </button>
                         <button
                             onClick={(e) => handleDelete(e, cat.id)}
-                            className="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-red-500 transition-colors"
+                            className="p-2 text-gray-400 hover:text-red-500 transition-colors"
                             title="Delete"
                         >
                             <Trash2 className="w-4 h-4" />
@@ -160,26 +161,36 @@ export default function CategoryManager({ initialCategories }: { initialCategori
                     </div>
                 </div>
 
-                <h3 className="text-xl font-bold text-gray-900 mb-2">{cat.title}</h3>
-                <p className="text-sm text-gray-500 mb-4 line-clamp-2 min-h-[2.5em]">
+                <h3 className="text-xl font-bold text-gray-900 mb-2 truncate">{cat.title}</h3>
+                <p className="text-sm text-gray-500 mb-4 font-sans line-clamp-2 min-h-[2.5em]">
                     {cat.description || "No description provided."}
                 </p>
 
-                <div className="flex items-center justify-between mt-auto">
-                    <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gray-400 group-hover:text-[#FF5722] transition-colors">
+                <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                    <span className="text-xs font-semibold text-gray-500">
                         {cat.events?.length || 0} Events
-                    </div>
+                    </span>
                     {cat.slug && (
-                         <span className="text-[10px] text-gray-300 font-mono bg-gray-50 px-2 py-1 rounded">/{cat.slug}</span>
+                            <span className="text-[10px] text-gray-400 font-mono">/{cat.slug}</span>
                     )}
                 </div>
             </div>
         ))}
 
         {initialCategories.length === 0 && !isCreating && (
-            <div className="col-span-full py-16 text-center bg-white rounded-2xl border border-dashed border-gray-300">
-                <Folder className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                <p className="text-gray-500 font-medium">No categories found. Create one to get started.</p>
+            <div className="col-span-full py-24 text-center bg-white rounded-xl border border-dashed border-gray-200 shadow-sm">
+                <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <Folder className="w-10 h-10 text-gray-300" />
+                </div>
+                <h3 className="text-xl font-oswald font-bold text-gray-900 mb-2">No Categories Yet</h3>
+                <p className="text-gray-500 font-medium mb-8 max-w-md mx-auto">Get started by creating your first event category to organize your events.</p>
+                <button
+                    onClick={() => { setIsCreating(true); setEditingCategory(null); }}
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-[#FF5722] text-white font-bold font-oswald uppercase tracking-wide rounded-full hover:bg-[#F4511E] transition-colors shadow-lg"
+                >
+                    <Plus className="w-5 h-5" />
+                    Create Category
+                </button>
             </div>
         )}
       </div>

@@ -4,7 +4,9 @@ import { Outfit, Oswald, Poppins } from "next/font/google";
 import "./globals.css";
 import SmoothScroll from "@/components/providers/SmoothScroll";
 import Navbar from "@/components/layout/Navbar";
+import FooterWrapper from "@/components/layout/FooterWrapper";
 import CustomCursor from "@/components/ui/CustomCursor";
+import OnboardingGuard from "@/components/auth/OnboardingGuard";
 import { Toaster } from "sonner";
 
 const outfit = Outfit({
@@ -46,7 +48,11 @@ export default function RootLayout({
           <React.Suspense fallback={<div className="h-16 w-full bg-white/10" />}>
              <Navbar />
           </React.Suspense>
+          <React.Suspense fallback={null}>
+             <OnboardingGuard />
+          </React.Suspense>
           {children}
+          <FooterWrapper />
           <Toaster
             position="top-center"
             richColors

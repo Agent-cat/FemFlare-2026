@@ -88,12 +88,12 @@ const InfiniteEventsTree: React.FC<InfiniteEventsTreeProps> = ({
             <div className="h-1 w-20 bg-[#FF5722]"></div>
           </div>
 
-          <div className="relative pl-8 md:pl-16 border-l border-[#FF5722]/20 space-y-6">
+          <div className="relative pl-5 md:pl-16 border-l border-[#FF5722]/20 space-y-6">
             {category.events && category.events.length > 0 ? (
                 category.events.map((event) => (
                 <div key={event.id} className="relative">
                     {/* Timeline Dot */}
-                    <div className="absolute -left-[32.5px] md:-left-[64.5px] top-5">
+                    <div className="absolute -left-[20.5px] md:-left-[64.5px] top-5">
                         <div className="w-2.5 h-2.5 rounded-full relative z-10 bg-[#FF5722] shadow-[0_0_8px_rgba(255,87,34,0.4)]">
                             <div className="absolute w-2.5 h-2.5 rounded-full animate-ping opacity-40 bg-[#FF5722]"></div>
                         </div>
@@ -120,7 +120,7 @@ const InfiniteEventsTree: React.FC<InfiniteEventsTreeProps> = ({
                                 )}>
                                     {event.title}
                                 </h3>
-                                <div className="flex flex-wrap gap-4 mt-1 text-[13px] text-gray-500 font-medium">
+                                <div className="flex flex-wrap gap-4 mt-1 text-[13px] text-gray-500 font-medium font-sans">
                                     <span className="flex items-center gap-1.5 font-semibold">
                                         <Calendar className="w-3.5 h-3.5" /> {formatDate(event.startDate)}
                                     </span>
@@ -169,21 +169,21 @@ const InfiniteEventsTree: React.FC<InfiniteEventsTreeProps> = ({
                                                         <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] mb-2 font-oswald opacity-60 text-[#FF5722]">
                                                             Description
                                                         </h4>
-                                                        <p className="text-sm md:text-base text-gray-800 leading-relaxed font-medium">
+                                                        <p className="text-sm md:text-base text-gray-800 leading-relaxed font-medium font-sans">
                                                             {event.description || "No description provided for this event."}
                                                         </p>
                                                     </div>
 
                                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                                         <div className="bg-black/5 p-4 rounded-xl border border-black/5">
-                                                            <h5 className="text-[9px] font-bold uppercase tracking-[0.15em] text-gray-500 mb-2">Venue</h5>
-                                                            <p className="text-[13px] font-bold text-gray-900 flex items-center gap-2">
+                                                            <h5 className="text-[9px] font-bold uppercase tracking-[0.15em] text-gray-500 mb-2 font-oswald">Venue</h5>
+                                                            <p className="text-[13px] font-bold text-gray-900 flex items-center gap-2 font-sans">
                                                                 <MapPin className="w-3.5 h-3.5 text-[#FF5722]" /> {event.location || "TBA"}
                                                             </p>
                                                         </div>
                                                         <div className="bg-black/5 p-4 rounded-xl border border-black/5">
-                                                            <h5 className="text-[9px] font-bold uppercase tracking-[0.15em] text-gray-500 mb-2">Time</h5>
-                                                            <p className="text-[13px] font-bold text-gray-900 flex items-center gap-2">
+                                                            <h5 className="text-[9px] font-bold uppercase tracking-[0.15em] text-gray-500 mb-2 font-oswald">Time</h5>
+                                                            <p className="text-[13px] font-bold text-gray-900 flex items-center gap-2 font-sans">
                                                                 <Clock className="w-3.5 h-3.5 text-[#FF5722]" /> {formatTime(event.startDate)}
                                                             </p>
                                                         </div>

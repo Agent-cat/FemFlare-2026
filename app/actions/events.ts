@@ -248,9 +248,9 @@ export async function getEvent(eventId: string) {
   }
 }
 
-export async function registerForEvent(eventId: string, userId: string) {
+export async function registerForEvent(userId: string, eventId: string) {
   try {
-    // Check if already registered first to be safe, though unique constraint will catch it
+    // Check if already registered first to be safe
     const existing = await prisma.eventRegistration.findUnique({
       where: {
         userId_eventId: { userId, eventId }
@@ -263,12 +263,12 @@ export async function registerForEvent(eventId: string, userId: string) {
 
     await prisma.eventRegistration.create({
       data: {
-        eventId,
         userId,
+        eventId,
       },
     });
-    revalidateTag(`user-registrations-${userId}`, 'max');
-    revalidateTag(`registration-${userId}-${eventId}`, 'max');
+
+    revalidateTag(`user-registrations-${userId}`,"max"); // Using standard revalidateTag
     return { success: true };
   } catch (error: any) {
     if (error.code === 'P2002') {
@@ -372,6 +372,10 @@ export async function getEventRegistrations(eventId: string) {
             name: true,
             email: true,
             image: true,
+            phoneNumber: true,
+            college: true,
+            studentId: true,
+            department: true,
             createdAt: true,
           }
         }

@@ -3,6 +3,7 @@
 import { authClient } from "@/lib/auth-client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
@@ -50,8 +51,45 @@ export default function SignUp() {
     if (session) return null;
 
     return (
-        <div className="min-h-screen bg-white flex items-center justify-center p-4">
-            <div className="max-w-md w-full space-y-8">
+        <div className="min-h-screen bg-[#F1EBE0] flex items-center justify-center p-4 relative overflow-hidden">
+
+            {/* --- BACKGROUND ELEMENTS (Copied from Events Page) --- */}
+
+            {/* 0. Background Image Layer */}
+            <div className="fixed inset-0 z-0 pointer-events-none">
+                {/* Women.png - Hidden on Mobile, visible on Desktop */}
+                <div className="hidden md:block absolute top-1/2 left-[30%] -translate-x-1/2 -translate-y-1/2 w-[60vw] h-[80vh] opacity-[0.12] mix-blend-multiply">
+                    <Image
+                        src="/images/women.png"
+                        alt="Background Texture Women"
+                        fill
+                        className="object-contain grayscale"
+                        priority
+                    />
+                </div>
+
+                {/* Doctor.png - Centered on Mobile, Right on Desktop */}
+                <div className="absolute top-1/2 left-1/2 md:left-[70%] -translate-x-1/2 -translate-y-1/2 w-[90vw] h-[60vh] md:w-[60vw] md:h-[80vh] opacity-[0.12] mix-blend-multiply">
+                    <Image
+                        src="/images/doctor.png"
+                        alt="Background Texture Doctor"
+                        fill
+                        className="object-contain grayscale"
+                        priority
+                    />
+                </div>
+            </div>
+
+            {/* 1. Sophisticated Pattern Overlay */}
+            <div className="fixed inset-0 z-0 opacity-[0.15] pointer-events-none"
+                style={{
+                    backgroundImage: `radial-gradient(#A9A29D 1px, transparent 1px), radial-gradient(#A9A29D 1px, transparent 1px)`,
+                    backgroundSize: '32px 32px',
+                    backgroundPosition: '0 0, 16px 16px',
+                }}
+            />
+
+            <div className="max-w-md w-full space-y-8 relative z-10">
                 <div className="text-center">
                     <h1 className="text-4xl font-serif text-[#FF5722] mb-2">Sign Up</h1>
                 </div>
