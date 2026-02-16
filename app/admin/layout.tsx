@@ -1,5 +1,6 @@
 import React, { Suspense } from 'react';
 import AdminSidebar from '@/components/admin/AdminSidebar';
+import AdminContentCheck from '@/components/admin/AdminContentCheck';
 
 export default function AdminLayout({
   children,
@@ -13,8 +14,10 @@ export default function AdminLayout({
       </Suspense>
       {/* Main Content */}
       <main className="flex-1 md:ml-64 p-4 md:p-8 pt-20 md:pt-8">
-        <Suspense fallback={<div className="flex h-screen items-center justify-center">Loading...</div>}>
-          {children}
+        <Suspense fallback={<div className="flex h-screen items-center justify-center font-oswald text-[#FF5722] animate-pulse">Checking Permissions...</div>}>
+            <AdminContentCheck>
+                {children}
+            </AdminContentCheck>
         </Suspense>
       </main>
     </div>

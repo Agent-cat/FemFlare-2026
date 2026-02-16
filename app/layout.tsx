@@ -52,7 +52,9 @@ export default function RootLayout({
              <OnboardingGuard />
           </React.Suspense>
           {children}
-          <FooterWrapper />
+          <React.Suspense fallback={null}>
+            <FooterWrapper />
+          </React.Suspense>
           <Toaster
             position="top-center"
             richColors

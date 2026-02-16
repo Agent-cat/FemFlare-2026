@@ -74,7 +74,7 @@ const WomenOfTodaySection = () => {
   }, []);
 
   return (
-    <section ref={sectionRef} className="relative w-full min-h-screen py-20 bg-[#F1EBE0] overflow-hidden text-black font-sans flex items-center justify-center">
+    <section ref={sectionRef} className="relative w-full min-h-screen py-20 bg-[#e0dac8] overflow-hidden text-black font-sans flex items-center justify-center">
 
       {/* Background Image Layer - Consistent with Events Page */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] h-[90vh] z-0 opacity-[0.12] mix-blend-multiply pointer-events-none">

@@ -40,12 +40,13 @@ export default function GalleryGrid({ images }: GalleryGridProps) {
           {filteredImages.map((img, index) => (
             <motion.div
               layout
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
               exit={{ opacity: 0, scale: 0.9 }}
-              transition={{ duration: 0.4 }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
               key={`${img.src}-${index}`}
-              className="break-inside-avoid relative group rounded-2xl overflow-hidden cursor-pointer bg-gray-100"
+              className="break-inside-avoid relative group rounded-2xl overflow-hidden cursor-pointer bg-gray-200"
               onClick={() => setSelectedImage(img)}
             >
               <div className="relative w-full">
@@ -56,6 +57,9 @@ export default function GalleryGrid({ images }: GalleryGridProps) {
                     height={1000}
                     className="w-full h-auto object-cover transition-transform duration-700 ease-in-out group-hover:scale-105"
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    loading="lazy"
+                    placeholder="blur"
+                    blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAMCAgICAgMCAgIDAwMDBAYEBAQEBAgGBgUGCQgKCgkICQkKDA8MCgsOCwkJDRENDg8QEBEQCgwSExIQEw8QEBD/2wBDAQMDAwQDBAgEBAgQCwkLEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBD/wAACAABnAAIAAREBAhb/x" // Simple gray blur
                  />
                  {/* Clean image, no overlays */}
               </div>

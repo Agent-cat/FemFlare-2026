@@ -1,16 +1,23 @@
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Mail, MapPin, Instagram } from "lucide-react";
 
 const Footer = () => {
   return (
-    <footer className="relative z-50 bg-[#F1EBE0] text-black pt-8 md:pt-16 pb-8 border-t border-black/10 font-sans">
+    <footer className="relative z-50 bg-[#e0dac8] text-black pt-8 md:pt-16 pb-8 border-t border-black/10 font-sans">
       <div className="container mx-auto px-6 md:px-12">
 
         {/* Mobile: Compact Layout (Logo + Socials centered) */}
         <div className="md:hidden flex flex-col items-center justify-center text-center space-y-6 mb-8">
-            <Link href="/" className="text-3xl font-oswald font-bold tracking-tighter uppercase text-black block">
-              Fem<span className="text-[#FF5722]">Flare</span>
+            <Link href="/" className="block">
+              <Image
+                src="/images/femflareloo2.png"
+                alt="FemFlare Logo"
+                width={180}
+                height={60}
+                className="h-16 w-auto object-contain mx-auto"
+              />
             </Link>
              <div className="flex items-center gap-4">
               <SocialLink href="https://www.instagram.com/kl_femflare" icon={<Instagram size={18} />} />
@@ -21,8 +28,14 @@ const Footer = () => {
         <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12 lg:gap-8">
           {/* Column 1: Brand & Description (Desktop Only) */}
           <div className="hidden md:block space-y-6">
-            <Link href="/" className="text-4xl font-oswald font-bold tracking-tighter uppercase text-black block">
-              Fem<span className="text-[#FF5722]">Flare</span>
+            <Link href="/" className="block">
+              <Image
+                src="/images/femflareloo2.png"
+                alt="FemFlare Logo"
+                width={250}
+                height={80}
+                className="h-24 w-auto object-contain"
+              />
             </Link>
             <p className="text-gray-600 text-sm leading-relaxed max-w-xs">
               Celebrating the spirit of womanhood at KL University.

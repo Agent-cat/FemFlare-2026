@@ -3,56 +3,51 @@ import GalleryGrid from '@/components/gallery/GalleryGrid';
 
 const galleryImages = [
   {
-    src: 'https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?q=80&w=1000&auto=format&fit=crop',
-    alt: 'Women Leadership Conference',
-    category: 'Leadership'
-  },
-  {
-    src: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?q=80&w=1000&auto=format&fit=crop',
-    alt: 'Community & Friendship',
+    src: '/images/a.jpeg',
+    alt: 'Gallery Image A',
     category: 'Community'
   },
   {
-    src: 'https://images.unsplash.com/photo-1590650153855-d9e808231d41?q=80&w=1000&auto=format&fit=crop',
-    alt: 'Professional Collaboration',
-    category: 'Work'
-  },
-  {
-    src: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?q=80&w=1000&auto=format&fit=crop',
-    alt: 'Healthcare Excellence',
-    category: 'Health'
-  },
-  {
-    src: 'https://images.unsplash.com/photo-1561525140-c2a4cc68e4bd?q=80&w=1000&auto=format&fit=crop',
-    alt: 'Creative Arts Performance',
-    category: 'Arts'
-  },
-  {
-    src: 'https://images.unsplash.com/photo-1531384441138-2736e62e0919?q=80&w=1000&auto=format&fit=crop',
-    alt: 'Empowerment Workshop',
-    category: 'Education'
-  },
-  {
-    src: 'https://images.unsplash.com/photo-1544027993-37dbfe43562a?q=80&w=1000&auto=format&fit=crop',
-    alt: 'Inspiring Speakers',
+    src: '/images/b.jpeg',
+    alt: 'Gallery Image B',
     category: 'Leadership'
   },
   {
-    src: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1000&auto=format&fit=crop',
-    alt: 'Collaborative Learning',
-    category: 'Education'
+    src: '/images/h.jpeg',
+    alt: 'Gallery Image H',
+    category: 'Community'
   },
   {
-    src: 'https://images.unsplash.com/photo-1607746882042-944635dfe10e?q=80&w=1000&auto=format&fit=crop',
-    alt: 'Women in Science',
+    src: '/images/c.jpeg',
+    alt: 'Gallery Image C',
+    category: 'Arts'
+  },
+  {
+    src: '/images/d.jpeg',
+    alt: 'Gallery Image D',
+    category: 'Fashion'
+  },
+  {
+    src: '/images/e.jpeg',
+    alt: 'Gallery Image E',
     category: 'Tech'
+  },
+  {
+    src: '/images/f.jpeg',
+    alt: 'Gallery Image F',
+    category: 'Community'
+  },
+  {
+    src: '/images/g.jpeg',
+    alt: 'Gallery Image G',
+    category: 'Leadership'
   }
 ];
 
 
 export default async function GalleryPage() {
   return (
-    <main className="min-h-screen bg-[#F1EBE0] text-[#1a1a1a] font-sans pt-32 pb-24 relative overflow-x-hidden">
+    <main className="min-h-screen bg-[#e0dac8] text-[#1a1a1a] font-sans pt-32 pb-24 relative overflow-x-hidden">
 
       {/* Background Elements - Soft, dreamy aesthetic */}
       <div className="fixed inset-0 z-0 pointer-events-none">
@@ -70,9 +65,25 @@ export default async function GalleryPage() {
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Header Section */}
+        <div className="flex flex-col items-center justify-center mb-16 text-center">
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-oswald font-bold uppercase tracking-tighter text-[#1a1a1a] mb-8">
+                Gallery
+            </h1>
 
-
-        {/* Gallery Grid Component */}
+            <div className="w-full max-w-4xl aspect-video rounded-2xl overflow-hidden shadow-2xl border-4 border-white/50">
+                <iframe
+                    width="100%"
+                    height="100%"
+                    src="https://www.youtube.com/embed/fybT9k3BZZs?si=-87mIudCxHLkOaiD"
+                    title="YouTube video player"
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    referrerPolicy="strict-origin-when-cross-origin"
+                    allowFullScreen
+                    className="w-full h-full"
+                ></iframe>
+            </div>
+        </div>        {/* Gallery Grid Component */}
         <GalleryGrid images={galleryImages} />
 
       </div>

@@ -12,6 +12,7 @@ import {
   useMotionValueEvent,
   AnimatePresence,
 } from "framer-motion";
+import Image from "next/image";
 
 const Navbar = () => {
   const { data: session, isPending } = authClient.useSession();
@@ -174,9 +175,16 @@ const Navbar = () => {
             {/* Logo */}
             <Link
               href="/"
-              className="text-2xl font-oswald font-bold text-black tracking-tighter uppercase relative z-50"
+              className="relative z-50 flex items-center"
             >
-              FemFlare
+              <Image
+                src="/images/femflareloo2.png"
+                alt="FemFlare Logo"
+                width={250}
+                height={80}
+                className="h-24 w-auto object-contain"
+                priority
+              />
             </Link>
 
             {/* Desktop Navigation */}
