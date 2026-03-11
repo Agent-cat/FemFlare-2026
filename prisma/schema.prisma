@@ -26,9 +26,11 @@ model User {
   college       String?
   studentId     String? // ID Number of the Participant
   department    String?
+  needsAccommodation Boolean @default(false)
   isOnboarded   Boolean             @default(false)
 
   @@map("user")
+  @@index([email])
 }
 
 model Session {
@@ -89,6 +91,8 @@ model EventCategory {
   events      Event[]
 
   @@map("event_category")
+  @@index([slug])
+  @@index([createdAt])
 }
 
 model Event {
@@ -101,6 +105,7 @@ model Event {
   startDate          DateTime            @default(now())
   endDate            DateTime?
   termsAndConditions String?
+  judgementCriteria  String?
   categoryId         String
   createdAt          DateTime            @default(now())
   updatedAt          DateTime            @updatedAt
@@ -108,6 +113,10 @@ model Event {
   registrations      EventRegistration[]
 
   @@map("event")
+  @@index([slug])
+  @@index([categoryId])
+  @@index([categoryId, startDate(sort: Asc)])
+  @@index([startDate(sort: Asc)])
 }
 
 model EventRegistration {
@@ -121,6 +130,8 @@ model EventRegistration {
   @@unique([userId, eventId])
   @@index([userId])
   @@index([eventId])
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([eventId, createdAt(sort: Desc)])
   @@map("event_registration")
 }
 

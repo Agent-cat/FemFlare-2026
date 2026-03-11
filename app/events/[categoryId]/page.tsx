@@ -3,16 +3,17 @@ import Link from 'next/link';
 import { ArrowLeft, Star } from 'lucide-react';
 import { getCategoryEvents, getUserRegistrations } from '@/app/actions/events';
 import Navbar from '@/components/layout/Navbar';
-import { EventCard, EventItem } from '@/components/events/EventCard';
+import { EventItem } from '@/components/events/EventCard';
+import InfiniteCategoryEvents from '@/components/events/InfiniteCategoryEvents';
 import { auth } from '@/lib/auth'; // Import auth
 import { headers } from 'next/headers'; // Import headers
 
 export default async function CategoryDetailsPage(props: {
   params: Promise<{ categoryId: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const params = await props.params;
-
-  const result = await getCategoryEvents(params.categoryId);
+    const { categoryId } = await props.params;
+    const result = await getCategoryEvents(categoryId, 1, 9);
 
   if (!result.success || !result.category) {
      return (
@@ -73,27 +74,13 @@ export default async function CategoryDetailsPage(props: {
                 )}
             </div>
 
-            {/* Events Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {events.map((event, idx) => (
-                    <EventCard
-                        key={event.id}
-                        event={event}
-                        index={idx}
-                        isRegistered={registeredEventIds.has(event.id)}
-                    />
-                ))}
-
-                {events.length === 0 && (
-                    <div className="col-span-full py-24 text-center">
-                        <div className="inline-flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-sm mb-6">
-                             <Star className="w-8 h-8 text-gray-300" />
-                        </div>
-                        <h3 className="text-xl font-bold text-gray-900 mb-2">No events yet</h3>
-                        <p className="text-gray-500">Check back later for updates in this collection.</p>
-                    </div>
-                )}
-            </div>
+            {/* Infinite Events Grid */}
+            <InfiniteCategoryEvents
+                categoryId={categoryId}
+                initialEvents={events}
+                initialHasMore={result.hasMore || false}
+                registeredEventIds={Array.from(registeredEventIds)}
+            />
         </div>
        </main>
     </div>

@@ -24,6 +24,8 @@ export interface EventItem {
   slug: string;
   type?: string;
   categoryId: string;
+  termsAndConditions?: string | null;
+  judgementCriteria?: string | null;
 }
 
 const PASTEL_PALETTE = [
@@ -102,7 +104,12 @@ export const EventCard = ({ event, index, isRegistered = false }: { event: Event
 
                 <div className="space-y-3">
 
-                    <RegisterButton eventId={event.id} initialIsRegistered={isRegistered} />
+                    <RegisterButton
+                        eventId={event.id}
+                        initialIsRegistered={isRegistered}
+                        termsAndConditions={event.termsAndConditions}
+                        judgementCriteria={event.judgementCriteria}
+                    />
                 </div>
             </div>
         </div>

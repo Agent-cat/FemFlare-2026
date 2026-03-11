@@ -18,6 +18,7 @@ export default function OnboardingPage() {
         department: "",
         studentId: "",
         address: "",
+        needsAccommodation: false,
     });
     const [loading, setLoading] = useState(false);
 
@@ -80,8 +81,8 @@ export default function OnboardingPage() {
 
     if (isPending || !session) {
         return (
-            <div className="min-h-screen bg-[#F1EBE0] flex items-center justify-center">
-                <div className="w-8 h-8 border-4 border-[#2D3436] border-t-transparent rounded-full animate-spin"></div>
+            <div className="min-h-screen bg-[#fdf5f7] flex items-center justify-center">
+                <div className="w-8 h-8 border-4 border-[#f43f5e] border-t-transparent rounded-full animate-spin"></div>
             </div>
         );
     }
@@ -104,7 +105,7 @@ export default function OnboardingPage() {
     };
 
     return (
-        <div className="min-h-screen bg-[#F1EBE0] flex items-center justify-center p-4 font-sans text-[#2D3436]">
+        <div className="min-h-screen bg-[#fdf5f7] flex items-center justify-center p-4 font-sans text-gray-900">
             <div className="max-w-2xl w-full bg-white/60 backdrop-blur-xl rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden min-h-[auto] md:min-h-[600px] flex flex-col border border-white/50">
                 {/* Progress Header */}
                 <div className="px-5 pt-6 pb-4 md:px-8 md:pt-8 md:pb-4 bg-transparent z-10">
@@ -114,7 +115,7 @@ export default function OnboardingPage() {
                                 <div
                                     key={i}
                                     className={`h-1.5 w-12 rounded-full transition-colors duration-300 ${
-                                        step >= i ? 'bg-[#2D3436]' : 'bg-gray-200'
+                                        step >= i ? 'bg-[#f43f5e]' : 'bg-gray-200'
                                     }`}
                                 />
                             ))}
@@ -153,7 +154,7 @@ export default function OnboardingPage() {
                                                 name="name"
                                                 value={formData.name}
                                                 onChange={handleChange}
-                                                className="w-full px-4 py-3.5 rounded-xl bg-[#F1EBE0]/50 border border-[#EBE5DB] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#2D3436]/5 focus:border-[#2D3436] transition-all placeholder:text-gray-400 text-[#2D3436] font-medium"
+                                                className="w-full px-4 py-3.5 rounded-xl bg-[#fdf5f7]/50 border border-[#EBE5DB] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#f43f5e]/5 focus:border-[#f43f5e] transition-all placeholder:text-gray-400 text-gray-900 font-medium"
                                                 placeholder="Your Name"
                                             />
                                         </div>
@@ -164,7 +165,7 @@ export default function OnboardingPage() {
                                                 id="email"
                                                 value={session.user?.email || ""}
                                                 disabled
-                                                className="w-full px-4 py-3.5 rounded-xl bg-[#F1EBE0] border border-[#EBE5DB] text-gray-500 cursor-not-allowed font-medium"
+                                                className="w-full px-4 py-3.5 rounded-xl bg-[#fdf5f7] border border-[#EBE5DB] text-gray-500 cursor-not-allowed font-medium"
                                             />
                                         </div>
                                     </div>
@@ -177,7 +178,7 @@ export default function OnboardingPage() {
                                             name="phoneNumber"
                                             value={formData.phoneNumber}
                                             onChange={handleChange}
-                                            className="w-full px-4 py-3.5 rounded-xl bg-[#F1EBE0]/50 border border-[#EBE5DB] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#2D3436]/5 focus:border-[#2D3436] transition-all placeholder:text-gray-400 text-[#2D3436] font-medium"
+                                            className="w-full px-4 py-3.5 rounded-xl bg-[#fdf5f7]/50 border border-[#EBE5DB] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#f43f5e]/5 focus:border-[#f43f5e] transition-all placeholder:text-gray-400 text-gray-900 font-medium"
                                             placeholder="+91 98765 43210"
                                         />
                                     </div>
@@ -190,7 +191,7 @@ export default function OnboardingPage() {
                                             value={formData.address}
                                             onChange={handleChange}
                                             rows={2}
-                                            className="w-full px-4 py-3.5 rounded-xl bg-[#F1EBE0]/50 border border-[#EBE5DB] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#2D3436]/5 focus:border-[#2D3436] transition-all placeholder:text-gray-400 text-[#2D3436] resize-none font-medium"
+                                            className="w-full px-4 py-3.5 rounded-xl bg-[#fdf5f7]/50 border border-[#EBE5DB] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#f43f5e]/5 focus:border-[#f43f5e] transition-all placeholder:text-gray-400 text-gray-900 resize-none font-medium"
                                             placeholder="Where are you located?"
                                         />
                                     </div>
@@ -223,7 +224,7 @@ export default function OnboardingPage() {
                                             name="college"
                                             value={formData.college}
                                             onChange={handleChange}
-                                            className="w-full px-4 py-3.5 rounded-xl bg-[#F1EBE0]/50 border border-[#EBE5DB] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#2D3436]/5 focus:border-[#2D3436] transition-all placeholder:text-gray-400 text-[#2D3436] font-medium"
+                                            className="w-full px-4 py-3.5 rounded-xl bg-[#fdf5f7]/50 border border-[#EBE5DB] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#f43f5e]/5 focus:border-[#f43f5e] transition-all placeholder:text-gray-400 text-gray-900 font-medium"
                                             placeholder="Enter your college name"
                                         />
                                     </div>
@@ -237,7 +238,7 @@ export default function OnboardingPage() {
                                                 name="department"
                                                 value={formData.department}
                                                 onChange={handleChange}
-                                                className="w-full px-4 py-3.5 rounded-xl bg-[#F1EBE0]/50 border border-[#EBE5DB] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#2D3436]/5 focus:border-[#2D3436] transition-all placeholder:text-gray-400 text-[#2D3436] font-medium"
+                                                className="w-full px-4 py-3.5 rounded-xl bg-[#fdf5f7]/50 border border-[#EBE5DB] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#f43f5e]/5 focus:border-[#f43f5e] transition-all placeholder:text-gray-400 text-gray-900 font-medium"
                                                 placeholder="e.g. CSE"
                                             />
                                         </div>
@@ -249,12 +250,32 @@ export default function OnboardingPage() {
                                                 name="studentId"
                                                 value={formData.studentId}
                                                 onChange={handleChange}
-                                                className="w-full px-4 py-3.5 rounded-xl bg-[#F1EBE0]/50 border border-[#EBE5DB] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#2D3436]/5 focus:border-[#2D3436] transition-all placeholder:text-gray-400 text-[#2D3436] font-medium"
+                                                className="w-full px-4 py-3.5 rounded-xl bg-[#fdf5f7]/50 border border-[#EBE5DB] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#f43f5e]/5 focus:border-[#f43f5e] transition-all placeholder:text-gray-400 text-gray-900 font-medium"
                                                 placeholder="e.g. 21BCE1234"
                                             />
                                         </div>
                                     </div>
 
+                                    <div className="pt-3">
+                                        <div className="flex items-center gap-3">
+                                            <div className="relative flex items-center">
+                                                <input
+                                                    type="checkbox"
+                                                    id="needsAccommodation"
+                                                    name="needsAccommodation"
+                                                    checked={formData.needsAccommodation}
+                                                    onChange={(e) => setFormData(prev => ({ ...prev, needsAccommodation: e.target.checked }))}
+                                                    className="w-5 h-5 rounded border-[#EBE5DB] text-[#f43f5e] focus:ring-[#f43f5e] transition-all bg-[#fdf5f7]/50 cursor-pointer"
+                                                />
+                                            </div>
+                                            <div className="flex flex-col">
+                                                <label htmlFor="needsAccommodation" className="text-sm font-semibold text-[#1A1A1A] cursor-pointer">
+                                                    I require accommodation
+                                                </label>
+                                                <span className="text-xs text-gray-500">Check this box if you need us to arrange stay during the event.</span>
+                                            </div>
+                                        </div>
+                                    </div>
 
                                 </div>
                             </motion.div>
@@ -278,7 +299,7 @@ export default function OnboardingPage() {
                         <button
                             onClick={handleNext}
                             disabled={loading}
-                            className="w-full md:w-auto md:min-w-[200px] px-8 md:px-12 py-4 bg-[#2D3436] hover:bg-[#000000] text-white font-semibold rounded-xl transition-all shadow-lg hover:shadow-xl disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 transform hover:-translate-y-0.5"
+                            className="w-full md:w-auto md:min-w-[200px] px-8 md:px-12 py-4 bg-[#f43f5e] hover:bg-[#e11d48] text-white font-semibold rounded-xl transition-all shadow-lg hover:shadow-xl disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 transform hover:-translate-y-0.5"
                         >
                             {loading ? (
                                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />

@@ -26,8 +26,8 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "FemFlair",
-  description: "A Website for KLfemflair 2026",
+  title: "FemFlare",
+  description: "A Website for KLFemFlare 2026",
   icons: {
     icon: "/favicon.ico",
   },

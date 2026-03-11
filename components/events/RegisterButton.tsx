@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Loader2, Check, X, ShieldCheck } from 'lucide-react';
 import { registerForEvent } from '@/app/actions/events';
@@ -12,14 +13,20 @@ interface RegisterButtonProps {
   eventId: string;
   initialIsRegistered: boolean;
   termsAndConditions?: string | null;
+  judgementCriteria?: string | null;
 }
 
-export default function RegisterButton({ eventId, initialIsRegistered, termsAndConditions }: RegisterButtonProps) {
+export default function RegisterButton({ eventId, initialIsRegistered, termsAndConditions, judgementCriteria }: RegisterButtonProps) {
   const [isRegistered, setIsRegistered] = useState(initialIsRegistered);
   const [isLoading, setIsLoading] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const router = useRouter();
   const { data: session } = authClient.useSession();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleRegisterClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -33,7 +40,7 @@ export default function RegisterButton({ eventId, initialIsRegistered, termsAndC
 
     if (isRegistered) return;
 
-    if (termsAndConditions) {
+    if (termsAndConditions || judgementCriteria) {
         setShowTerms(true);
     } else {
         proceedWithRegistration();
@@ -78,69 +85,91 @@ export default function RegisterButton({ eventId, initialIsRegistered, termsAndC
         )}
       </button>
 
-      <AnimatePresence>
-        {showTerms && (
-          <div className="fixed inset-0 z-100 flex flex-col bg-[#F1EBE0]">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
-              className="flex flex-col h-full w-full"
-            >
-              {/* Sticky Header */}
-              <div className="shrink-0 px-6 py-8 md:px-12 md:py-10 border-b border-black/5 bg-[#F1EBE0]/80 backdrop-blur-md sticky top-0 z-10">
-                <div className="max-w-4xl mx-auto flex justify-between items-center">
-                  <div className="flex items-center gap-4 md:gap-6">
-                    <div className="p-3 bg-[#FF5722]/10 rounded-2xl">
-                      <ShieldCheck className="w-6 h-6 md:w-8 md:h-8 text-[#FF5722]" />
+      {mounted && createPortal(
+        <AnimatePresence>
+          {showTerms && (
+            <div className="fixed inset-0 z-[100] flex flex-col bg-[#F1EBE0]">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                className="flex flex-col h-full w-full"
+              >
+                {/* Sticky Header */}
+                <div className="shrink-0 px-6 py-8 md:px-12 md:py-10 border-b border-black/5 bg-[#F1EBE0]/80 backdrop-blur-md sticky top-0 z-10">
+                  <div className="max-w-4xl mx-auto flex justify-between items-center">
+                    <div className="flex items-center gap-4 md:gap-6">
+                      <div className="p-3 bg-[#FF5722]/10 rounded-2xl">
+                        <ShieldCheck className="w-6 h-6 md:w-8 md:h-8 text-[#FF5722]" />
+                      </div>
+                      <div>
+                        <h3 className="font-oswald text-2xl md:text-3xl font-bold uppercase tracking-tight text-gray-900 leading-none mb-1">
+                          {judgementCriteria && termsAndConditions ? "Judgement & Terms" : judgementCriteria ? "Judgement" : "Terms & Conditions"}
+                        </h3>
+                        <div className="h-1 w-12 bg-[#FF5722]"></div>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="font-oswald text-2xl md:text-4xl font-bold uppercase tracking-tight text-gray-900 leading-none mb-1">Terms & Conditions</h3>
-                      <div className="h-1 w-12 bg-[#FF5722]"></div>
-                    </div>
+                    <button
+                      onClick={() => setShowTerms(false)}
+                      className="p-3 hover:bg-black/5 rounded-full transition-all group"
+                    >
+                      <X className="w-6 h-6 text-gray-400 group-hover:text-gray-900 transition-colors" />
+                    </button>
                   </div>
-                  <button
-                    onClick={() => setShowTerms(false)}
-                    className="p-3 hover:bg-black/5 rounded-full transition-all group"
-                  >
-                    <X className="w-6 h-6 text-gray-400 group-hover:text-gray-900 transition-colors" />
-                  </button>
                 </div>
-              </div>
 
-              {/* Scrollable Content */}
-              <div className="flex-1 overflow-y-auto custom-scrollbar">
-                <div className="max-w-4xl mx-auto px-6 py-12 md:px-12 md:py-20">
-                  <div
-                    className="text-gray-700 text-base md:text-lg leading-relaxed prose prose-orange max-w-none
-                               prose-headings:font-oswald prose-headings:uppercase prose-headings:tracking-tight
-                               prose-p:mb-6 prose-li:mb-2 prose-strong:text-gray-900"
-                    dangerouslySetInnerHTML={{ __html: termsAndConditions as string }}
-                  />
-                </div>
-              </div>
+                {/* Scrollable Content */}
+                <div className="flex-1 overflow-y-auto custom-scrollbar">
+                  <div className="max-w-4xl mx-auto px-6 py-12 md:px-12 md:py-16 space-y-12">
+                    {judgementCriteria && (
+                        <div>
+                            <h4 className="font-oswald text-xl font-bold uppercase tracking-wide text-gray-900 mb-6">Judgement</h4>
+                            <div
+                                className="text-gray-700 text-base md:text-lg leading-relaxed prose prose-orange max-w-none
+                                           prose-headings:font-oswald prose-headings:uppercase prose-headings:tracking-tight
+                                           prose-p:mb-6 prose-li:mb-2 prose-strong:text-gray-900 bg-white/50 p-6 md:p-8 rounded-2xl border border-black/5"
+                                dangerouslySetInnerHTML={{ __html: judgementCriteria as string }}
+                            />
+                        </div>
+                    )}
 
-              {/* Sticky Footer */}
-              <div className="shrink-0 px-6 py-8 md:px-12 border-t border-black/5 bg-[#F1EBE0]/80 backdrop-blur-md sticky bottom-0 z-10">
-                <div className="max-w-4xl mx-auto flex flex-col sm:flex-row gap-4">
-                  <button
-                    onClick={() => setShowTerms(false)}
-                    className="flex-1 px-8 py-4 bg-black/5 text-gray-600 font-bold text-xs md:text-sm uppercase tracking-[0.2em] rounded-2xl hover:bg-black/10 transition-all"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={proceedWithRegistration}
-                    className="flex-2 px-8 py-4 bg-[#FF5722] text-white font-black text-xs md:text-sm uppercase tracking-[0.2em] rounded-2xl hover:bg-[#F4511E] transition-all shadow-xl shadow-orange-500/20 active:scale-[0.98]"
-                  >
-                    I Accept and Register
-                  </button>
+                    {termsAndConditions && (
+                        <div>
+                            <h4 className="font-oswald text-xl font-bold uppercase tracking-wide text-gray-900 mb-6">Terms & Conditions</h4>
+                            <div
+                                className="text-gray-700 text-base md:text-lg leading-relaxed prose prose-orange max-w-none
+                                           prose-headings:font-oswald prose-headings:uppercase prose-headings:tracking-tight
+                                           prose-p:mb-6 prose-li:mb-2 prose-strong:text-gray-900 bg-white/50 p-6 md:p-8 rounded-2xl border border-black/5"
+                                dangerouslySetInnerHTML={{ __html: termsAndConditions as string }}
+                            />
+                        </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+
+                {/* Sticky Footer */}
+                <div className="shrink-0 px-6 py-8 md:px-12 border-t border-black/5 bg-[#F1EBE0]/80 backdrop-blur-md sticky bottom-0 z-10">
+                  <div className="max-w-4xl mx-auto flex flex-col sm:flex-row gap-4">
+                    <button
+                      onClick={() => setShowTerms(false)}
+                      className="flex-1 px-8 py-4 bg-black/5 text-gray-600 font-bold text-xs md:text-sm uppercase tracking-[0.2em] rounded-2xl hover:bg-black/10 transition-all font-oswald"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={proceedWithRegistration}
+                      className="flex-[2] px-8 py-4 bg-[#FF5722] text-white font-black text-xs md:text-sm uppercase tracking-[0.2em] rounded-2xl hover:bg-[#F4511E] transition-all shadow-xl shadow-orange-500/20 active:scale-[0.98] font-oswald"
+                    >
+                      I Accept and Register
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </>
   );
 }

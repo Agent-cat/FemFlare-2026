@@ -1,6 +1,6 @@
 export default function Loading() {
   return (
-    <div className="min-h-screen bg-[#F1EBE0] text-[#1a1a1a] font-sans pt-24 md:pt-32">
+    <div className="min-h-screen bg-[#fdf5f7] text-[#1a1a1a] font-sans pt-24 md:pt-32">
       <div className="w-full max-w-screen-2xl mx-auto px-6 relative z-10">
 
         {/* Skeleton Header Section */}

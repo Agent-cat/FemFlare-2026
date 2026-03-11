@@ -19,6 +19,7 @@ export interface EventItem {
   slug: string;
   categoryId: string;
   termsAndConditions?: string | null;
+  judgementCriteria?: string | null;
 }
 
 export interface Category {
@@ -184,6 +185,26 @@ export const EventsTree: React.FC<EventsTreeProps> = ({ data, registeredEventIds
                                                             </p>
                                                         </div>
                                                     </div>
+
+                                                    {event.judgementCriteria && (
+                                                        <div className="bg-[#FF5722]/5 p-4 md:p-5 rounded-xl border border-[#FF5722]/10 mt-4">
+                                                            <h5 className="text-[10px] font-bold uppercase tracking-[0.2em] mb-3 font-oswald text-[#FF5722]">
+                                                                Judgement Criteria
+                                                            </h5>
+                                                            {event.judgementCriteria.includes('<') && event.judgementCriteria.includes('>') ? (
+                                                                <div
+                                                                    className="text-sm text-gray-800 leading-relaxed font-medium prose prose-sm prose-p:my-1 prose-ul:my-1 prose-li:my-0 marker:text-[#FF5722]"
+                                                                    dangerouslySetInnerHTML={{ __html: event.judgementCriteria }}
+                                                                />
+                                                            ) : (
+                                                                <ul className="list-inside list-disc space-y-1.5 text-sm text-gray-800 font-medium marker:text-[#FF5722]">
+                                                                    {event.judgementCriteria.split('\n').filter(line => line.trim()).map((line, i) => (
+                                                                        <li key={i} className="pl-1">{line.replace(/^[-*•]\s*/, '')}</li>
+                                                                    ))}
+                                                                </ul>
+                                                            )}
+                                                        </div>
+                                                    )}
                                                 </div>
 
                                                 <div className="pt-8 flex flex-col sm:flex-row items-center gap-4">
@@ -192,6 +213,7 @@ export const EventsTree: React.FC<EventsTreeProps> = ({ data, registeredEventIds
                                                             eventId={event.id}
                                                             initialIsRegistered={registeredEventIds.includes(event.id)}
                                                             termsAndConditions={event.termsAndConditions}
+                                                            judgementCriteria={event.judgementCriteria}
                                                         />
                                                     </div>
                                                     <Link

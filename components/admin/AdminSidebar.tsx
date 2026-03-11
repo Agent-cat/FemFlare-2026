@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { LayoutDashboard, Calendar, Users, Settings, LogOut, Menu, X } from 'lucide-react';
+import { LayoutDashboard, Calendar, Users, Settings, LogOut, Menu, X, BedDouble } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { authClient } from '@/lib/auth-client';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -27,6 +27,7 @@ export default function AdminSidebar() {
   const navItems = [
     { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
     { name: 'Events', href: '/admin/events', icon: Calendar },
+    { name: 'Accommodation', href: '/admin/accommodation', icon: BedDouble },
     // { name: 'Users', href: '/admin/users', icon: Users }, // Future
     // { name: 'Settings', href: '/admin/settings', icon: Settings }, // Future
   ];
@@ -36,7 +37,7 @@ export default function AdminSidebar() {
     <div className="flex flex-col h-full bg-[#EBE5DB] border-r border-[#DCCEB8]">
       <div className="p-8 border-b border-[#DCCEB8]">
            <Link href="/" className="text-2xl font-oswald font-bold text-black tracking-tighter uppercase" onClick={() => setIsOpen(false)}>
-              FemFair <span className="text-[#FF5722] text-xs align-top">Admin</span>
+              FemFlare <span className="text-[#FF5722] text-xs align-top">Admin</span>
           </Link>
       </div>
 
@@ -79,7 +80,7 @@ export default function AdminSidebar() {
       {/* Mobile Header - Visible only on mobile */}
       <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-[#EBE5DB] border-b border-[#DCCEB8] z-50 px-4 flex items-center justify-between shadow-sm">
         <Link href="/" className="text-xl font-oswald font-bold text-black tracking-tighter uppercase">
-            FemFair <span className="text-[#FF5722] text-xs align-top">Admin</span>
+            FemFlare <span className="text-[#FF5722] text-xs align-top">Admin</span>
         </Link>
         <button
           onClick={() => setIsOpen(!isOpen)}

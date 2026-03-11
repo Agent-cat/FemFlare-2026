@@ -49,7 +49,7 @@ export default function AdminDashboard() {
             <div className="relative z-10">
                 <h2 className="text-2xl font-oswald font-bold text-gray-900 mb-4 uppercase">Welcome Back</h2>
                 <p className="text-gray-600 font-sans text-lg max-w-2xl leading-relaxed mb-6">
-                    Welcome to the FemFair Admin Panel. Manage your events, view registrations, and oversee the platform.
+                    Welcome to the FemFlare Admin Panel. Manage your events, view registrations, and oversee the platform.
                 </p>
                 <div className="flex gap-4">
                      <button

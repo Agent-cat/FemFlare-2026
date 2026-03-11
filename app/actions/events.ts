@@ -46,7 +46,7 @@ export async function createCategory(formData: FormData) {
       },
     });
 
-    revalidateTag('event-categories',"max");
+    revalidateTag('event-categories', "max");
     return { success: true };
   } catch (error) {
     console.error("Failed to create category:", error);
@@ -59,7 +59,7 @@ export async function deleteCategory(categoryId: string) {
         await prisma.eventCategory.delete({
             where: { id: categoryId }
         });
-        revalidateTag('event-categories',"max");
+        revalidateTag('event-categories', "max");
         return { success: true };
     } catch (error) {
         console.error("Failed to delete category:", error);
@@ -87,7 +87,7 @@ export async function updateCategory(categoryId: string, formData: FormData) {
       data,
     });
 
-    revalidateTag('event-categories','max');
+    revalidateTag('event-categories', "max");
     return { success: true };
   } catch (error) {
     console.error("Failed to update category:", error);
@@ -104,6 +104,7 @@ export async function updateEvent(eventId: string, categoryId: string, formData:
   const location = formData.get('location') as string;
   const description = formData.get('description') as string;
   const terms = formData.get('terms') as string;
+  const judgement = formData.get('judgement') as string;
   const imageFile = formData.get('image') as File;
 
   if (!title || !startDateStr) {
@@ -117,6 +118,7 @@ export async function updateEvent(eventId: string, categoryId: string, formData:
         location,
         description,
         termsAndConditions: terms,
+        judgementCriteria: judgement,
     };
 
     if (endDateStr) {
@@ -134,9 +136,9 @@ export async function updateEvent(eventId: string, categoryId: string, formData:
       data,
     });
 
-    revalidateTag(`category-events-${categoryId}`,'max');
-    revalidateTag('event-categories','max');
-    revalidateTag(`event-${eventId}`,'max');
+    revalidateTag(`category-events-${categoryId}`, "max");
+    revalidateTag('event-categories', "max");
+    revalidateTag(`event-${eventId}`, "max");
 
     return { success: true };
   } catch (error) {
@@ -145,23 +147,38 @@ export async function updateEvent(eventId: string, categoryId: string, formData:
   }
 }
 
-export async function getCategoryEvents(categoryId: string) {
+export async function getCategoryEvents(categoryId: string, page: number = 1, limit: number = 10) {
   "use cache";
   cacheTag('event-categories');
   cacheTag(`category-events-${categoryId}`);
 
   try {
-    const events = await prisma.event.findMany({
-      where: { categoryId },
-      orderBy: { startDate: 'asc' }
-    });
+    const skip = (page - 1) * limit;
 
-    // Also fetch the category details for the header
-    const category = await prisma.eventCategory.findUnique({
+    const [events, totalEvents, category] = await Promise.all([
+      prisma.event.findMany({
+        where: { categoryId },
+        orderBy: { startDate: 'asc' },
+        skip,
+        take: limit + 1
+      }),
+      prisma.event.count({ where: { categoryId } }),
+      prisma.eventCategory.findUnique({
         where: { id: categoryId }
-    });
+      })
+    ]);
 
-    return { success: true, events, category };
+    const hasMore = events.length > limit;
+    const data = hasMore ? events.slice(0, limit) : events;
+
+    return {
+        success: true,
+        events: data,
+        category,
+        hasMore,
+        totalPages: Math.ceil(totalEvents / limit),
+        currentPage: page
+    };
   } catch (error) {
     console.error("Failed to fetch events:", error);
     return { success: false, error: "Failed to fetch events" };
@@ -175,6 +192,7 @@ export async function createEvent(formData: FormData) {
   const location = formData.get('location') as string;
   const description = formData.get('description') as string;
   const terms = formData.get('terms') as string;
+  const judgement = formData.get('judgement') as string;
   const categoryId = formData.get('categoryId') as string;
   const imageFile = formData.get('image') as File;
 
@@ -198,13 +216,14 @@ export async function createEvent(formData: FormData) {
         location,
         description,
         termsAndConditions: terms,
+        judgementCriteria: judgement,
         image: imageUrl,
         categoryId,
       },
     });
 
-    revalidateTag(`category-events-${categoryId}`,'max');
-    revalidateTag('event-categories','max'); // Update counts
+    revalidateTag(`category-events-${categoryId}`, "max");
+    revalidateTag('event-categories', "max"); // Update counts
 
     return { success: true };
   } catch (error) {
@@ -218,8 +237,8 @@ export async function deleteEvent(eventId: string, categoryId: string) {
         await prisma.event.delete({
             where: { id: eventId }
         });
-        revalidateTag(`category-events-${categoryId}`,"max");
-        revalidateTag('event-categories','max');
+        revalidateTag(`category-events-${categoryId}`, "max");
+        revalidateTag('event-categories', "max");
         return { success: true };
     } catch (error) {
          console.error("Failed to delete event:", error);
@@ -250,7 +269,16 @@ export async function getEvent(eventId: string) {
 
 export async function registerForEvent(userId: string, eventId: string) {
   try {
-    // Check if already registered first to be safe
+    // 1. Get the event details for the new registration
+    const newEvent = await prisma.event.findUnique({
+      where: { id: eventId }
+    });
+
+    if (!newEvent) {
+      return { success: false, error: "Event not found" };
+    }
+
+    // 2. Check if already registered first to be safe
     const existing = await prisma.eventRegistration.findUnique({
       where: {
         userId_eventId: { userId, eventId }
@@ -261,6 +289,31 @@ export async function registerForEvent(userId: string, eventId: string) {
       return { success: true }; // Treat as success if already registered
     }
 
+    // 3. Check for time clashes with other registrations of this user
+    const userRegistrations = await prisma.eventRegistration.findMany({
+        where: { userId },
+        include: { event: true }
+    });
+
+    const newStart = new Date(newEvent.startDate);
+    // If endDate is missing, assume a 2-hour duration for clash detection
+    const newEnd = newEvent.endDate ? new Date(newEvent.endDate) : new Date(newStart.getTime() + 2 * 60 * 60 * 1000);
+
+    for (const reg of userRegistrations) {
+        const existEvent = reg.event;
+        const existStart = new Date(existEvent.startDate);
+        const existEnd = existEvent.endDate ? new Date(existEvent.endDate) : new Date(existStart.getTime() + 2 * 60 * 60 * 1000);
+
+        // Overlap detection: (StartA < EndB) && (EndA > StartB)
+        if (newStart < existEnd && newEnd > existStart) {
+            return {
+                success: false,
+                error: `Time Clash! You have already registered for "${existEvent.title}" which overlaps with this event's schedule.`
+            };
+        }
+    }
+
+    // 4. Create registration if no clash
     await prisma.eventRegistration.create({
       data: {
         userId,
@@ -268,7 +321,7 @@ export async function registerForEvent(userId: string, eventId: string) {
       },
     });
 
-    revalidateTag(`user-registrations-${userId}`,"max"); // Using standard revalidateTag
+    revalidateTag(`user-registrations-${userId}`, "max"); // Using standard revalidateTag
     return { success: true };
   } catch (error: any) {
     if (error.code === 'P2002') {
@@ -327,8 +380,8 @@ export async function unregisterFromEvent(eventId: string, userId: string) {
             }
         });
 
-        revalidateTag(`user-registrations-${userId}`, 'max');
-        revalidateTag(`registration-${userId}-${eventId}`, 'max');
+        revalidateTag(`user-registrations-${userId}`,"max");
+        revalidateTag(`registration-${userId}-${eventId}`,'max');
 
         return { success: true };
     } catch (error) {

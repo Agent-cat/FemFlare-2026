@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
+import { connection } from "next/server";
 import { auth } from "@/lib/auth";
 
 export default async function AdminContentCheck({
@@ -7,6 +8,7 @@ export default async function AdminContentCheck({
 }: {
   children: React.ReactNode;
 }) {
+  await connection();
   const session = await auth.api.getSession({
     headers: await headers()
   });

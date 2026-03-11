@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { Menu, X, User, LogOut } from "lucide-react";
+import { Menu, X, User, LogOut, ChevronDown } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/Button";
@@ -19,6 +19,7 @@ const Navbar = () => {
   const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isTeamsOpen, setIsTeamsOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const { scrollY } = useScroll();
 
@@ -85,17 +86,72 @@ const Navbar = () => {
 
             {/* Background decoration */}
             <div className="absolute top-0 right-0 w-full h-full overflow-hidden pointer-events-none opacity-5">
-                <h1 className="text-[40vh] font-black font-oswald text-[#FF5722] rotate-90 origin-top-right absolute top-0 right-0 leading-none">
+                <h1 className="text-[40vh] font-black font-oswald text-[#d819e6] rotate-90 origin-top-right absolute top-0 right-0 leading-none">
                     FEMFLARE
                 </h1>
             </div>
 
-            <div className="flex-1 flex flex-col items-center justify-center space-y-2 relative z-10">
-              <nav className="flex flex-col items-center gap-6">
+            <div className="flex-1 flex flex-col items-center justify-start space-y-2 relative z-10 overflow-y-auto no-scrollbar pt-8">
+              <nav className="flex flex-col items-center gap-4 sm:gap-6 w-full pb-8">
                   {[
                     { href: "/", label: "Home" },
                     { href: "/events", label: "Events" },
                     { href: "/gallery", label: "Gallery" },
+                    { href: "/visionary", label: "Our Visionary" },
+                  ].map((item, idx) => (
+                    <motion.div
+                        key={item.href}
+                        initial={{ opacity: 0, y: 40 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 + idx * 0.1, duration: 0.5, ease: "easeOut" }}
+                        className="group relative flex items-center justify-center w-full shrink-0"
+                    >
+                        <Link
+                        onClick={() => setIsMenuOpen(false)}
+                        href={item.href}
+                        className={`text-4xl sm:text-6xl font-oswald font-bold group-hover:text-transparent group-hover:stroke-text transition-all duration-300 uppercase tracking-tight text-center ${
+                          pathname === item.href ? "text-[#d819e6] underline underline-offset-8 decoration-4" : "text-black"
+                        }`}
+                        >
+                            {item.label}
+                        </Link>
+                    </motion.div>
+                  ))}
+
+                  {/* Teams Mobile Dropdown */}
+                  <motion.div
+                      initial={{ opacity: 0, y: 40 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.5, duration: 0.5, ease: "easeOut" }}
+                      className="group relative flex flex-col items-center justify-center w-full shrink-0"
+                  >
+                      <button
+                      onClick={() => setIsTeamsOpen(!isTeamsOpen)}
+                      className={`text-4xl sm:text-6xl font-oswald font-bold group-hover:text-transparent group-hover:stroke-text transition-all duration-300 uppercase tracking-tight text-center flex items-center gap-2 ${
+                        pathname.startsWith("/teams") ? "text-[#d819e6] underline underline-offset-8 decoration-4" : "text-black"
+                      }`}
+                      >
+                          TEAMS
+                          <ChevronDown className={`w-8 h-8 md:w-12 md:h-12 transition-transform duration-300 ${isTeamsOpen ? "rotate-180" : ""} ${pathname.startsWith("/teams") ? "text-[#d819e6]" : "text-black"}`} />
+                      </button>
+                      <AnimatePresence>
+                        {isTeamsOpen && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            className="flex flex-col items-center gap-4 mt-4 overflow-hidden"
+                          >
+                             <Link onClick={() => setIsMenuOpen(false)} href="/teams/chief-patrons" className={`text-xl sm:text-3xl font-oswald font-medium uppercase tracking-widest ${pathname === "/teams/chief-patrons" ? "text-[#d819e6] underline decoration-2 underline-offset-4" : "text-gray-500 hover:text-[#d819e6]"}`}>Chief Patrons</Link>
+                             <Link onClick={() => setIsMenuOpen(false)} href="/teams/chairpersons" className={`text-xl sm:text-3xl font-oswald font-medium uppercase tracking-widest ${pathname === "/teams/chairpersons" ? "text-[#d819e6] underline decoration-2 underline-offset-4" : "text-gray-500 hover:text-[#d819e6]"}`}>Chairpersons</Link>
+                             <Link onClick={() => setIsMenuOpen(false)} href="/teams/conveners" className={`text-xl sm:text-3xl font-oswald font-medium uppercase tracking-widest ${pathname === "/teams/conveners" ? "text-[#d819e6] underline decoration-2 underline-offset-4" : "text-gray-500 hover:text-[#d819e6]"}`}>Conveners</Link>
+                             <Link onClick={() => setIsMenuOpen(false)} href="/teams/co-conveners" className={`text-xl sm:text-3xl font-oswald font-medium uppercase tracking-widest ${pathname === "/teams/co-conveners" ? "text-[#d819e6] underline decoration-2 underline-offset-4" : "text-gray-500 hover:text-[#d819e6]"}`}>Co-Conveners</Link>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                  </motion.div>
+
+                  {[
                     ...(session ? [{ href: "/registered-events", label: "My Events" }] : []),
                     ...(session && (session.user as any)?.role === "ADMIN" ? [{ href: "/admin/events", label: "Admin" }] : []),
                   ].map((item, idx) => (
@@ -103,13 +159,15 @@ const Navbar = () => {
                         key={item.href}
                         initial={{ opacity: 0, y: 40 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.1 + idx * 0.1, duration: 0.5, ease: "easeOut" }}
-                        className="group relative flex items-center justify-center w-full"
+                        transition={{ delay: 0.6 + idx * 0.1, duration: 0.5, ease: "easeOut" }}
+                        className="group relative flex items-center justify-center w-full shrink-0"
                     >
                         <Link
                         onClick={() => setIsMenuOpen(false)}
                         href={item.href}
-                        className="text-5xl sm:text-7xl font-oswald font-bold text-black group-hover:text-transparent group-hover:stroke-text transition-all duration-300 uppercase tracking-tight text-center"
+                        className={`text-4xl sm:text-6xl font-oswald font-bold transition-all duration-300 uppercase tracking-tight text-center ${
+                          pathname === item.href ? "text-black underline underline-offset-8 decoration-4" : "text-[#d819e6] hover:text-black"
+                        }`}
                         >
                             {item.label}
                         </Link>
@@ -147,7 +205,7 @@ const Navbar = () => {
                 ) : (
                   <div className="flex flex-col items-center gap-3 w-full">
                      <Link onClick={() => setIsMenuOpen(false)} href="/signup" className="w-full max-w-xs">
-                        <Button className="w-full py-6 text-sm font-bold uppercase tracking-widest bg-black text-white hover:bg-[#FF5722] rounded-full shadow-lg">
+                        <Button className="w-full py-6 text-sm font-bold uppercase tracking-widest bg-black text-white hover:bg-[#d819e6] rounded-full shadow-lg">
                             Get Started
                         </Button>
                      </Link>
@@ -191,26 +249,44 @@ const Navbar = () => {
             <div className="hidden md:flex items-center space-x-8">
               <Link
                 href="/"
-                className="font-sans font-medium hover:text-[#FF5722] transition-colors"
+                className={`font-sans font-medium transition-colors ${pathname === "/" ? "text-[#d819e6] underline underline-offset-[6px] decoration-2" : "hover:text-[#d819e6]"}`}
               >
                 Home
               </Link>
               <Link
                 href="/events"
-                className="font-sans font-medium hover:text-[#FF5722] transition-colors"
+                className={`font-sans font-medium transition-colors ${pathname === "/events" ? "text-[#d819e6] underline underline-offset-[6px] decoration-2" : "hover:text-[#d819e6]"}`}
               >
                 Events
               </Link>
               <Link
                 href="/gallery"
-                className="font-sans font-medium hover:text-[#FF5722] transition-colors"
+                className={`font-sans font-medium transition-colors ${pathname === "/gallery" ? "text-[#d819e6] underline underline-offset-[6px] decoration-2" : "hover:text-[#d819e6]"}`}
               >
                 Gallery
               </Link>
+              <Link
+                href="/visionary"
+                className={`font-sans font-medium transition-colors ${pathname === "/visionary" ? "text-[#d819e6] underline underline-offset-[6px] decoration-2" : "hover:text-[#d819e6]"}`}
+              >
+                Our Visionary
+              </Link>
+              <div className="relative group">
+                <button className={`font-sans font-medium transition-colors flex items-center gap-1 py-4 ${pathname.startsWith("/teams") ? "text-[#d819e6] underline underline-offset-[6px] decoration-2" : "hover:text-[#d819e6]"}`}>
+                  Teams
+                  <ChevronDown className="w-4 h-4" />
+                </button>
+                <div className="absolute top-full left-1/2 -translate-x-1/2 w-48 bg-white/90 backdrop-blur-md border border-white/20 rounded-xl shadow-xl overflow-hidden py-1 opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-all duration-200">
+                  <Link href="/teams/chief-patrons" className={`block px-4 py-2.5 text-sm font-medium transition-colors ${pathname === "/teams/chief-patrons" ? "text-[#d819e6] bg-black/5" : "text-black hover:bg-black/5 hover:text-[#d819e6]"}`}>Chief Patrons</Link>
+                  <Link href="/teams/chairpersons" className={`block px-4 py-2.5 text-sm font-medium transition-colors ${pathname === "/teams/chairpersons" ? "text-[#d819e6] bg-black/5" : "text-black hover:bg-black/5 hover:text-[#d819e6]"}`}>Chairpersons</Link>
+                  <Link href="/teams/conveners" className={`block px-4 py-2.5 text-sm font-medium transition-colors ${pathname === "/teams/conveners" ? "text-[#d819e6] bg-black/5" : "text-black hover:bg-black/5 hover:text-[#d819e6]"}`}>Conveners</Link>
+                  <Link href="/teams/co-conveners" className={`block px-4 py-2.5 text-sm font-medium transition-colors ${pathname === "/teams/co-conveners" ? "text-[#d819e6] bg-black/5" : "text-black hover:bg-black/5 hover:text-[#d819e6]"}`}>Co-Conveners</Link>
+                </div>
+              </div>
               {session && (
                 <Link
                   href="/registered-events"
-                  className="font-sans font-medium hover:text-[#FF5722] transition-colors"
+                  className={`font-sans font-medium transition-colors ${pathname === "/registered-events" ? "text-[#d819e6] underline underline-offset-[6px] decoration-2" : "hover:text-[#d819e6]"}`}
                 >
                   My Events
                 </Link>
@@ -218,7 +294,7 @@ const Navbar = () => {
               {(session?.user as any)?.role === "ADMIN" && (
                 <Link
                   href="/admin/events"
-                  className="font-sans font-bold text-[#FF5722] hover:text-black transition-colors"
+                  className={`font-sans font-bold transition-colors ${pathname === "/admin/events" ? "text-black underline underline-offset-[6px] decoration-2" : "text-[#d819e6] hover:text-black"}`}
                 >
                   Admin
                 </Link>
@@ -235,7 +311,7 @@ const Navbar = () => {
                     onClick={() => setIsProfileOpen(!isProfileOpen)}
                     className="flex items-center space-x-3 bg-white/50 px-4 py-2 rounded-full border border-white/30 backdrop-blur-sm hover:bg-white/70 transition-colors"
                   >
-                    <div className="w-8 h-8 bg-[#FF5722] rounded-full flex items-center justify-center text-white font-bold">
+                    <div className="w-8 h-8 bg-[#d819e6] rounded-full flex items-center justify-center text-white font-bold">
                       {session.user.name?.[0]?.toUpperCase() || (
                         <User size={16} />
                       )}
@@ -269,7 +345,7 @@ const Navbar = () => {
               ) : (
                 <>
                   <Link href="/signin">
-                    <span className="font-medium hover:text-[#FF5722] transition-colors cursor-pointer">
+                    <span className="font-medium hover:text-[#d819e6] transition-colors cursor-pointer">
                       Sign In
                     </span>
                   </Link>

@@ -15,7 +15,7 @@ export const metadata:Metadata = {
 
 export default function EventsPage() {
   return (
-    <div className="relative min-h-screen bg-[#e0dac8] text-black font-sans pt-24 md:pt-32 overflow-hidden selection:text-white">
+    <div className="relative min-h-screen bg-[#fdf5f7] text-black font-sans pt-24 md:pt-32 overflow-hidden selection:text-white">
 
       {/* Background Components (Static Shell) */}
       <EventsBackground />

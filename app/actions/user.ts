@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+import { connection } from "next/server";
 
 export async function updateUserOnboarding(formData: {
     phoneNumber: string;
@@ -10,6 +11,7 @@ export async function updateUserOnboarding(formData: {
     college: string;
     studentId: string;
     department: string;
+    needsAccommodation?: boolean;
     name?: string; // Optional update
 }) {
     const session = await auth.api.getSession({
@@ -29,6 +31,7 @@ export async function updateUserOnboarding(formData: {
                 college: formData.college,
                 studentId: formData.studentId,
                 department: formData.department,
+                needsAccommodation: formData.needsAccommodation ?? false,
                 name: formData.name || undefined, // Only update if provided
                 isOnboarded: true,
             },
@@ -41,6 +44,7 @@ export async function updateUserOnboarding(formData: {
 }
 
 export async function getAllUsers() {
+    await connection();
     try {
         // Authenticate admin check
          const session = await auth.api.getSession({
@@ -74,5 +78,40 @@ export async function getAllUsers() {
     } catch (error) {
         console.error("Failed to fetch all users:", error);
         return { success: false, error: "Failed to fetch users" };
+    }
+}
+
+export async function getUsersNeedAccommodation() {
+    await connection();
+    try {
+        const session = await auth.api.getSession({
+            headers: await headers()
+        });
+
+        if (!session || !session.user || (session.user as any).role !== "ADMIN") {
+            return { success: false, error: "Unauthorized" };
+        }
+
+        const users = await prisma.user.findMany({
+            where: {
+                needsAccommodation: true
+            },
+            orderBy: { createdAt: 'desc' },
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                phoneNumber: true,
+                college: true,
+                studentId: true,
+                department: true,
+                address: true,
+                createdAt: true,
+            }
+        });
+        return { success: true, users };
+    } catch (error) {
+        console.error("Failed to fetch accommodation users:", error);
+        return { success: false, error: "Failed to fetch accommodation data" };
     }
 }

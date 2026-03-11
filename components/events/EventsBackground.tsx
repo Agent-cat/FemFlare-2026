@@ -11,9 +11,6 @@ const EventsBackground = () => {
            }}
       />
 
-      {/* 2. Soft Gradient Background */}
-      <div className="fixed inset-0 z-[-1] pointer-events-none bg-gradient-to-br from-[#F1EBE0] via-[#e6dfd1] to-[#d8cfbd]" />
-
       {/* User Requested: Left Side Image */}
       <div className="fixed left-0 top-1/2 -translate-y-1/2 h-[90vh] w-[45vw] z-0 pointer-events-none opacity-20 hidden md:block">
          <Image

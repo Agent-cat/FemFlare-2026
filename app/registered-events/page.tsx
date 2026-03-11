@@ -1,5 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
+import EventsBackground from '@/components/events/EventsBackground';
 import { ArrowLeft, Calendar } from 'lucide-react';
 import Link from 'next/link';
 import { auth } from '@/lib/auth';
@@ -21,46 +22,34 @@ export default async function RegisteredEventsPage() {
     const events = registrations || [];
 
     return (
-        <div className="relative min-h-screen bg-[#e0dac8] text-[#1a1a1a] font-sans pt-24 md:pt-32 overflow-hidden selection:text-white">
+        <div className="relative min-h-screen bg-[#fdf5f7] text-black font-sans pt-24 md:pt-32 overflow-hidden selection:text-white">
 
-            {/* Background Image Layer */}
-            <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] h-[90vh] z-0 opacity-[0.12] mix-blend-multiply pointer-events-none">
-                <Image
-                    src="/images/2.png"
-                    alt="Background Texture"
-                    fill
-                    className="object-contain grayscale"
-                    priority
-                />
-            </div>
+            {/* Background Components (Static Shell) */}
+            <EventsBackground />
 
             <main className="w-full pb-24 relative overflow-hidden z-10">
                 <div className="w-full max-w-screen-2xl mx-auto px-6 relative z-10">
 
                     {/* Back Link */}
-                    <div className="">
-                         <Link href="/events" className="group inline-flex items-center gap-3 text-gray-500 hover:text-[#FF5722] transition-all">
-                             <div className="w-10 h-10 rounded-full bg-[#FF5722]/05 backdrop-blur-sm border border-[#FF5722]/10 flex items-center justify-center group-hover:border-[#FF5722]/30 group-hover:bg-[#FF5722]/10 transition-all shadow-sm">
-                                 <ArrowLeft className="w-5 h-5 text-gray-900" />
+                    <div className="mb-8">
+                         <Link href="/events" className="group inline-flex items-center gap-3 text-gray-500 hover:text-[#FF5722] transition-colors">
+                             <div className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center group-hover:border-[#FF5722] transition-colors shadow-sm">
+                                 <ArrowLeft className="w-5 h-5" />
                              </div>
-                             <span className="text-xs font-black uppercase tracking-[0.2em] text-gray-900">All Events</span>
+                             <span className="text-sm font-bold uppercase tracking-widest">All Events</span>
                          </Link>
                     </div>
 
                     {/* Header Section */}
-                    <div className="flex flex-col items-center text-center ">
+                    <div className="flex flex-col items-center text-center">
                         <h1 className="flex flex-wrap justify-center items-center gap-x-3 md:gap-x-6 leading-none font-oswald mb-10">
-                            <span className="text-4xl md:text-6xl lg:text-7xl font-black tracking-tighter text-[#1a1a1a] uppercase">
+                            <span className="text-4xl md:text-6xl lg:text-7xl font-black tracking-tighter text-[#1a1a1a] uppercase drop-shadow-sm">
                                 REGISTERED
                             </span>
-                            <span
-                                className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-widest text-[#1a1a1a] uppercase"
-                                style={{ WebkitTextStroke: '1px #1a1a1a', WebkitTextFillColor: 'transparent' }}
-                            >
+                            <span className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-widest text-[#FF5722] uppercase drop-shadow-sm">
                                 EVENTS
                             </span>
                         </h1>
-
 
 
                     </div>
@@ -69,13 +58,15 @@ export default async function RegisteredEventsPage() {
                     {events.length > 0 ? (
                         <RegisteredEventsTimeline events={events as any} />
                     ) : (
-                        <div className="py-32 text-center bg-[#FF5722]/05 backdrop-blur-sm rounded-[40px] border border-dashed border-[#FF5722]/20">
-
-                            <h3 className="font-oswald text-3xl font-bold uppercase tracking-tight text-gray-900 mb-4">No registered events yet</h3>
-                            <p className="text-gray-500 max-w-md mx-auto mb-10 text-base">
-                                Discovery amazing events and join the community. Your registrations will appear here.
+                        <div className="py-24 text-center mt-8">
+                            <div className="inline-flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-sm mb-6 border border-gray-100">
+                                <Calendar className="w-8 h-8 text-gray-300" />
+                            </div>
+                            <h3 className="font-oswald text-3xl font-bold uppercase tracking-tight text-gray-900 drop-shadow-sm mb-3">No registered events yet</h3>
+                            <p className="text-gray-500 max-w-md mx-auto mb-10 text-base font-medium">
+                                Discover amazing events and join the community. Your registrations will appear here.
                             </p>
-                            <Link href="/events" className="inline-flex h-14 items-center justify-center rounded-2xl bg-[#FF5722] px-10 text-xs font-black uppercase tracking-[0.2em] text-white transition-all hover:bg-[#F4511E] shadow-xl shadow-orange-500/20">
+                            <Link href="/events" className="inline-flex h-14 items-center justify-center rounded-2xl bg-[#FF5722] px-10 text-[11px] font-black uppercase tracking-[0.2em] text-white transition-all hover:bg-[#F4511E] shadow-xl shadow-orange-500/20">
                                 Explore Events
                             </Link>
                         </div>

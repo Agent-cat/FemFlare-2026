@@ -3,7 +3,8 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Plus, Calendar, MapPin, ArrowLeft, Loader2, Edit2, Trash2, Image as ImageIcon, Users } from 'lucide-react';
-import { createEvent, deleteEvent, updateEvent, getEventRegistrations } from '@/app/actions/events';
+import { createEvent, deleteEvent, updateEvent, getEventRegistrations, getCategoryEvents } from '@/app/actions/events';
+import { useInView } from 'react-intersection-observer';
 import RegistrationModal from './RegistrationModal';
 import { toast } from 'sonner';
 
@@ -15,6 +16,7 @@ interface Event {
   location: string | null;
   description: string | null;
   termsAndConditions?: string | null;
+  judgementCriteria?: string | null;
   image?: string | null;
 }
 
@@ -23,11 +25,62 @@ interface Category {
   title: string;
 }
 
-export default function EventManager({ category, initialEvents }: { category: Category, initialEvents: Event[] }) {
+export default function EventManager({
+  category,
+  initialEvents,
+  currentPage = 1,
+  totalPages = 1
+}: {
+  category: Category;
+  initialEvents: Event[];
+  currentPage?: number;
+  totalPages?: number;
+}) {
   const router = useRouter();
   const [isCreating, setIsCreating] = useState(false);
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Infinite Scroll State
+  const [events, setEvents] = useState<Event[]>(initialEvents);
+  const [page, setPage] = useState(currentPage);
+  const [hasMore, setHasMore] = useState(currentPage < totalPages);
+  const [loadingMore, setLoadingMore] = useState(false);
+
+  // Synchronize state with incoming props on router.refresh()
+  React.useEffect(() => {
+     setEvents(initialEvents);
+     setPage(1);
+     setHasMore(1 < totalPages);
+  }, [initialEvents, totalPages]);
+
+  const { ref, inView } = useInView({
+      threshold: 0,
+      rootMargin: '100px',
+  });
+
+  const loadMore = async () => {
+      if (loadingMore || !hasMore) return;
+      setLoadingMore(true);
+      const nextPage = page + 1;
+      const result = await getCategoryEvents(category.id, nextPage, 9);
+      if (result.success && result.events) {
+          setEvents(prev => {
+              const newEvents = result.events as Event[];
+              const existingIds = prev.map(e => e.id);
+              return [...prev, ...newEvents.filter(e => !existingIds.includes(e.id))];
+          });
+          setPage(nextPage);
+          setHasMore(nextPage < (result.totalPages || 1));
+      }
+      setLoadingMore(false);
+  };
+
+  React.useEffect(() => {
+      if (inView) {
+          loadMore();
+      }
+  }, [inView]);
 
   // Registration Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -202,6 +255,17 @@ export default function EventManager({ category, initialEvents }: { category: Ca
                 </div>
 
                 <div>
+                     <label className="block text-sm font-bold text-gray-700 mb-2 font-oswald uppercase tracking-wide">Judgement Criteria</label>
+                     <textarea
+                        name="judgement"
+                        defaultValue={editingEvent?.judgementCriteria || ''}
+                        className="w-full px-5 py-3 rounded-xl border border-[#DCCEB8] bg-white focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#FF5722]/20 focus:border-[#FF5722] transition-all font-sans"
+                        placeholder="Criteria for judgement..."
+                        rows={3}
+                    />
+                </div>
+
+                <div>
                      <label className="block text-sm font-bold text-gray-700 mb-2 font-oswald uppercase tracking-wide">Terms & Conditions</label>
                      <textarea
                         name="terms"
@@ -225,7 +289,7 @@ export default function EventManager({ category, initialEvents }: { category: Ca
 
       {/* Events List */}
       <div className="space-y-6">
-        {initialEvents.map((event) => (
+        {events.map((event) => (
             <div
                 key={event.id}
                 className="group bg-white p-5 rounded-xl border border-gray-200 hover:border-[#FF5722] hover:shadow-md transition-all duration-200 flex flex-col md:flex-row md:items-center justify-between gap-6"
@@ -287,7 +351,7 @@ export default function EventManager({ category, initialEvents }: { category: Ca
             </div>
         ))}
 
-        {initialEvents.length === 0 && !isCreating && (
+        {events.length === 0 && !isCreating && (
             <div className="py-24 text-center bg-white rounded-xl border border-dashed border-gray-200 shadow-sm">
                 <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6">
                     <Calendar className="w-10 h-10 text-gray-300" />
@@ -302,6 +366,13 @@ export default function EventManager({ category, initialEvents }: { category: Ca
                     Create Event
                 </button>
             </div>
+        )}
+
+        {/* Infinite Scroll Trigger */}
+        {hasMore && (
+           <div ref={ref} className="h-16 flex justify-center items-center mt-6">
+               {loadingMore && <Loader2 className="w-6 h-6 animate-spin text-[#FF5722]" />}
+           </div>
         )}
       </div>
 

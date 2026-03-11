@@ -5,7 +5,9 @@ import { Mail, MapPin, Instagram } from "lucide-react";
 
 const Footer = () => {
   return (
-    <footer className="relative z-50 bg-[#e0dac8] text-black pt-8 md:pt-16 pb-8 border-t border-black/10 font-sans">
+    <footer className="relative z-50 bg-[#0f172a] text-white pt-8 md:pt-16 pb-8 font-sans">
+      {/* Vibrant Gradient Separation Line */}
+      <div className="absolute top-0 left-0 w-full h-2 md:h-3 bg-gradient-to-r from-[#e64980] to-[#fd7e14]"></div>
       <div className="container mx-auto px-6 md:px-12">
 
         {/* Mobile: Compact Layout (Logo + Socials centered) */}
@@ -16,7 +18,7 @@ const Footer = () => {
                 alt="FemFlare Logo"
                 width={180}
                 height={60}
-                className="h-16 w-auto object-contain mx-auto"
+                className="h-16 w-auto object-contain mx-auto brightness-0 invert"
               />
             </Link>
              <div className="flex items-center gap-4">
@@ -25,7 +27,7 @@ const Footer = () => {
         </div>
 
         {/* Desktop: Grid Layout (Full Content) & Mobile: Links Only */}
-        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12 lg:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-8 md:gap-12 lg:gap-8">
           {/* Column 1: Brand & Description (Desktop Only) */}
           <div className="hidden md:block space-y-6">
             <Link href="/" className="block">
@@ -34,10 +36,10 @@ const Footer = () => {
                 alt="FemFlare Logo"
                 width={250}
                 height={80}
-                className="h-24 w-auto object-contain"
+                className="h-24 w-auto object-contain brightness-0 invert"
               />
             </Link>
-            <p className="text-gray-600 text-sm leading-relaxed max-w-xs">
+            <p className="text-gray-300 text-sm leading-relaxed max-w-xs">
               Celebrating the spirit of womanhood at KL University.
             </p>
             <div className="flex items-center gap-4">
@@ -54,6 +56,7 @@ const Footer = () => {
               <FooterLink href="/" label="Home" />
               <FooterLink href="/events" label="Events" />
               <FooterLink href="/gallery" label="Gallery" />
+              <FooterLink href="/visionary" label="Our Visionary" />
               <FooterLink href="/about" label="About" />
             </ul>
           </div>
@@ -64,12 +67,12 @@ const Footer = () => {
               Contact
             </h3>
             <div className="space-y-2 md:space-y-4 flex flex-col items-center md:items-start">
-               <a href="mailto:femflare@kluniversity.in" className="flex items-center gap-2 text-gray-600 hover:text-[#FF5722] transition-colors">
+               <a href="mailto:femflare@kluniversity.in" className="flex items-center gap-2 text-gray-300 hover:text-[#FF5722] transition-colors">
                   <Mail size={16} className="text-[#FF5722] shrink-0" />
                   <span className="text-xs md:text-sm">femflare@kluniversity.in</span>
                </a>
                 {/* Desktop Address only */}
-                <div className="hidden md:flex items-start gap-3 text-gray-600">
+                <div className="hidden md:flex items-start gap-3 text-gray-300">
                     <MapPin size={20} className="text-[#FF5722] shrink-0 mt-1" />
                     <span className="text-sm">KL University, AP, India</span>
                 </div>
@@ -81,7 +84,7 @@ const Footer = () => {
             <h3 className="text-lg font-oswald font-bold uppercase tracking-widest text-[#FF5722]">
               Find Us
             </h3>
-            <div className="w-full h-32 md:h-48 rounded-xl overflow-hidden border border-black/10 shadow-lg relative bg-white/50">
+            <div className="w-full h-32 md:h-48 rounded-xl overflow-hidden border border-white/10 shadow-lg relative bg-white/5">
                <iframe
                 width="100%"
                 height="100%"
@@ -99,7 +102,7 @@ const Footer = () => {
         </div>
 
         {/* Bottom Bar: Highly Simplified for Mobile */}
-        <div className="mt-8 md:mt-16 pt-6 md:pt-8 border-t border-black/5 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="mt-8 md:mt-16 pt-6 md:pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-[10px] md:text-xs text-center md:text-left text-gray-400 uppercase tracking-wider">
             &copy; 2026 FemFlare.
           </p>
@@ -114,7 +117,7 @@ const Footer = () => {
 const SocialLink = ({ href, icon }: { href: string; icon: React.ReactNode }) => (
   <a
     href={href}
-    className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-black/10 flex items-center justify-center text-gray-600 hover:bg-[#FF5722] hover:text-white hover:border-[#FF5722] transition-all duration-300"
+    className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-white/20 flex items-center justify-center text-gray-300 hover:bg-[#FF5722] hover:text-white hover:border-[#FF5722] transition-all duration-300"
   >
     {icon}
   </a>
@@ -124,7 +127,7 @@ const FooterLink = ({ href, label }: { href: string; label: string }) => (
   <li>
     <Link
       href={href}
-      className="text-gray-600 hover:text-[#FF5722] hover:pl-2 transition-all duration-300 text-xs md:text-sm font-medium uppercase tracking-wide inline-flex items-center gap-2 group justify-center md:justify-start"
+      className="text-gray-300 hover:text-[#FF5722] md:hover:pl-2 transition-all duration-300 text-xs md:text-sm font-medium uppercase tracking-wide inline-flex items-center gap-2 group justify-center md:justify-start"
     >
       <span className="hidden md:inline-block w-1.5 h-1.5 rounded-full bg-[#FF5722] opacity-0 group-hover:opacity-100 transition-opacity"></span>
       {label}
