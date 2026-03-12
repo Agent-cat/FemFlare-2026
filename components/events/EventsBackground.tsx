@@ -24,7 +24,7 @@ const EventsBackground = () => {
 
       {/* 3. Large Typography (Fixed Background) */}
       <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-0 pointer-events-none whitespace-nowrap select-none">
-         <h1 className="text-[15vw] md:text-[20vw] font-black font-oswald leading-none tracking-tighter text-black opacity-[0.02] rotate-[-5deg]">
+         <h1 className="text-[15vw] md:text-[20vw] font-black font-poppins leading-none tracking-tighter text-white/5 rotate-[-5deg]">
             FEMFLARE
          </h1>
       </div>

@@ -28,6 +28,7 @@ export default function AdminSidebar() {
     { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
     { name: 'Events', href: '/admin/events', icon: Calendar },
     { name: 'Accommodation', href: '/admin/accommodation', icon: BedDouble },
+    { name: 'Volunteers', href: '/admin/events-data', icon: Users },
     // { name: 'Users', href: '/admin/users', icon: Users }, // Future
     // { name: 'Settings', href: '/admin/settings', icon: Settings }, // Future
   ];

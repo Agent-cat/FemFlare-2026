@@ -1,400 +1,387 @@
 "use client";
 
-import React, { useState } from "react";
-import Link from "next/link";
-import { Menu, X, User, LogOut, ChevronDown } from "lucide-react";
-import { useRouter, usePathname } from "next/navigation";
-import { authClient } from "@/lib/auth-client";
-import { Button } from "@/components/ui/Button";
-import {
-  motion,
-  useScroll,
-  useMotionValueEvent,
-  AnimatePresence,
-} from "framer-motion";
-import Image from "next/image";
+import React, { useState, useRef, useEffect } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { Menu, X, User, LogOut, ChevronDown } from 'lucide-react';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import { authClient } from '@/lib/auth-client';
+import { Button } from '@/components/ui/Button';
+import { motion, AnimatePresence } from 'framer-motion';
+import { toast } from "sonner";
 
 const Navbar = () => {
-  const { data: session, isPending } = authClient.useSession();
-  const router = useRouter();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const [isTeamsOpen, setIsTeamsOpen] = useState(false);
-  const [isVisible, setIsVisible] = useState(true);
-  const { scrollY } = useScroll();
+    const { data: session, isPending } = authClient.useSession();
+    const router = useRouter();
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isProfileOpen, setIsProfileOpen] = useState(false);
+    const [mounted, setMounted] = useState(false);
+    const profileRef = useRef<HTMLDivElement>(null);
 
-  useMotionValueEvent(scrollY, "change", (latest) => {
-    const previous = scrollY.getPrevious() || 0;
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
+    const activeTab = pathname === '/teams' ? parseInt(searchParams.get('tab') || '0', 10) : -1;
+    const isHome = pathname === "/";
+    const [isScrolled, setIsScrolled] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
 
-    // Don't hide if menu is open or profile is open
-    if (isMenuOpen || isProfileOpen) {
-      setIsVisible(true);
-      return;
-    }
+    useEffect(() => {
+        setMounted(true);
+        const handleScroll = () => {
+            if (window.scrollY > 20) {
+                setIsScrolled(true);
+            } else {
+                setIsScrolled(false);
+            }
+        };
 
-    // Show at the very top
-    if (latest < 50) {
-      setIsVisible(true);
-      return;
-    }
+        const handleResize = () => {
+            setIsMobile(window.innerWidth < 768);
+        };
 
-    // Hide on scroll down, Show on scroll up
-    if (latest > previous && latest > 50) {
-      setIsVisible(false);
-    } else {
-      setIsVisible(true);
-    }
-  });
+        // Initial check
+        handleResize();
 
-  const handleLogout = async () => {
-    await authClient.signOut({
-      fetchOptions: {
-        onSuccess: () => {
-          setIsProfileOpen(false);
-          setIsMenuOpen(false);
-          router.push("/signin");
-        },
-      },
-    });
-  };
+        window.addEventListener("scroll", handleScroll);
+        window.addEventListener("resize", handleResize);
+        function handleClickOutside(event: MouseEvent) {
+            if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
+                setIsProfileOpen(false);
+            }
+        }
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            window.removeEventListener("scroll", handleScroll);
+            window.removeEventListener("resize", handleResize);
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
 
-  const pathname = usePathname();
+    // Navbar should appear "scrolled" if:
+    // 1. Not on home page
+    // 2. We've actually scrolled
+    // 3. We're on mobile (as per user request to remove 'hide/transparent' navbar on mobile home page)
+    const scrolled = !isHome || isScrolled || isMobile;
 
-  if (pathname.startsWith("/admin")) {
-    return null;
-  }
+    const handleLogout = async () => {
+        await authClient.signOut({
+            fetchOptions: {
+                onSuccess: () => {
+                    setIsProfileOpen(false);
+                    setIsMenuOpen(false);
+                    router.push("/");
+                },
+            },
+        });
+    };
 
-  return (
-    <>
-      <AnimatePresence>
-        {isMenuOpen && (
-          <motion.div
-            initial={{ x: "100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "100%" }}
-            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }} // smooth easeOutQuint
-            className="fixed inset-0 bg-[#F1EBE0] z-40 flex flex-col justify-between p-8 md:hidden"
-          >
-            {/* Header Area for Close Button alignment */}
-            <div className="flex justify-between items-center p-6 pb-0">
-                 <div className="text-xl font-oswald font-bold text-gray-400 tracking-widest uppercase">
-                    MENU
-                 </div>
-                 {/* Close button is handled by the main navbar button Z-index */}
-                 <div className="w-10"></div>
-            </div>
+    const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+        if (pathname === href) {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            // Handle Lenis if active
+            if ((window as any).lenis) {
+                (window as any).lenis.scrollTo(0);
+            }
+            setIsMenuOpen(false);
+        } else {
+            setIsMenuOpen(false);
+        }
+    };
 
-            {/* Background decoration */}
-            <div className="absolute top-0 right-0 w-full h-full overflow-hidden pointer-events-none opacity-5">
-                <h1 className="text-[40vh] font-black font-oswald text-[#d819e6] rotate-90 origin-top-right absolute top-0 right-0 leading-none">
-                    FEMFLARE
-                </h1>
-            </div>
-
-            <div className="flex-1 flex flex-col items-center justify-start space-y-2 relative z-10 overflow-y-auto no-scrollbar pt-8">
-              <nav className="flex flex-col items-center gap-4 sm:gap-6 w-full pb-8">
-                  {[
-                    { href: "/", label: "Home" },
-                    { href: "/events", label: "Events" },
-                    { href: "/gallery", label: "Gallery" },
-                    { href: "/visionary", label: "Our Visionary" },
-                  ].map((item, idx) => (
+    return (
+        <>
+            {/* Backdrop overlay to close mobile menu when tapping outside */}
+            <AnimatePresence>
+                {isMenuOpen && (
                     <motion.div
-                        key={item.href}
-                        initial={{ opacity: 0, y: 40 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.1 + idx * 0.1, duration: 0.5, ease: "easeOut" }}
-                        className="group relative flex items-center justify-center w-full shrink-0"
-                    >
-                        <Link
-                        onClick={() => setIsMenuOpen(false)}
-                        href={item.href}
-                        className={`text-4xl sm:text-6xl font-oswald font-bold group-hover:text-transparent group-hover:stroke-text transition-all duration-300 uppercase tracking-tight text-center ${
-                          pathname === item.href ? "text-[#d819e6] underline underline-offset-8 decoration-4" : "text-black"
-                        }`}
-                        >
-                            {item.label}
-                        </Link>
-                    </motion.div>
-                  ))}
-
-                  {/* Teams Mobile Dropdown */}
-                  <motion.div
-                      initial={{ opacity: 0, y: 40 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.5, duration: 0.5, ease: "easeOut" }}
-                      className="group relative flex flex-col items-center justify-center w-full shrink-0"
-                  >
-                      <button
-                      onClick={() => setIsTeamsOpen(!isTeamsOpen)}
-                      className={`text-4xl sm:text-6xl font-oswald font-bold group-hover:text-transparent group-hover:stroke-text transition-all duration-300 uppercase tracking-tight text-center flex items-center gap-2 ${
-                        pathname.startsWith("/teams") ? "text-[#d819e6] underline underline-offset-8 decoration-4" : "text-black"
-                      }`}
-                      >
-                          TEAMS
-                          <ChevronDown className={`w-8 h-8 md:w-12 md:h-12 transition-transform duration-300 ${isTeamsOpen ? "rotate-180" : ""} ${pathname.startsWith("/teams") ? "text-[#d819e6]" : "text-black"}`} />
-                      </button>
-                      <AnimatePresence>
-                        {isTeamsOpen && (
-                          <motion.div
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: "auto", opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            className="flex flex-col items-center gap-4 mt-4 overflow-hidden"
-                          >
-                             <Link onClick={() => setIsMenuOpen(false)} href="/teams/chief-patrons" className={`text-xl sm:text-3xl font-oswald font-medium uppercase tracking-widest ${pathname === "/teams/chief-patrons" ? "text-[#d819e6] underline decoration-2 underline-offset-4" : "text-gray-500 hover:text-[#d819e6]"}`}>Chief Patrons</Link>
-                             <Link onClick={() => setIsMenuOpen(false)} href="/teams/chairpersons" className={`text-xl sm:text-3xl font-oswald font-medium uppercase tracking-widest ${pathname === "/teams/chairpersons" ? "text-[#d819e6] underline decoration-2 underline-offset-4" : "text-gray-500 hover:text-[#d819e6]"}`}>Chairpersons</Link>
-                             <Link onClick={() => setIsMenuOpen(false)} href="/teams/conveners" className={`text-xl sm:text-3xl font-oswald font-medium uppercase tracking-widest ${pathname === "/teams/conveners" ? "text-[#d819e6] underline decoration-2 underline-offset-4" : "text-gray-500 hover:text-[#d819e6]"}`}>Conveners</Link>
-                             <Link onClick={() => setIsMenuOpen(false)} href="/teams/co-conveners" className={`text-xl sm:text-3xl font-oswald font-medium uppercase tracking-widest ${pathname === "/teams/co-conveners" ? "text-[#d819e6] underline decoration-2 underline-offset-4" : "text-gray-500 hover:text-[#d819e6]"}`}>Co-Conveners</Link>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                  </motion.div>
-
-                  {[
-                    ...(session ? [{ href: "/registered-events", label: "My Events" }] : []),
-                    ...(session && (session.user as any)?.role === "ADMIN" ? [{ href: "/admin/events", label: "Admin" }] : []),
-                  ].map((item, idx) => (
-                    <motion.div
-                        key={item.href}
-                        initial={{ opacity: 0, y: 40 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.6 + idx * 0.1, duration: 0.5, ease: "easeOut" }}
-                        className="group relative flex items-center justify-center w-full shrink-0"
-                    >
-                        <Link
-                        onClick={() => setIsMenuOpen(false)}
-                        href={item.href}
-                        className={`text-4xl sm:text-6xl font-oswald font-bold transition-all duration-300 uppercase tracking-tight text-center ${
-                          pathname === item.href ? "text-black underline underline-offset-8 decoration-4" : "text-[#d819e6] hover:text-black"
-                        }`}
-                        >
-                            {item.label}
-                        </Link>
-                    </motion.div>
-                  ))}
-              </nav>
-            </div>
-
-            <motion.div
-                initial={{ opacity: 0, y: 50 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5, duration: 0.5 }}
-                className="relative z-10 w-full"
-            >
-                <div className="w-full h-[1px] bg-black/10 mb-8"></div>
-
-                {session ? (
-                  <div className="flex flex-col items-center gap-4">
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-black rounded-full flex items-center justify-center text-white font-bold text-sm">
-                            {session.user.name?.[0]?.toUpperCase()}
-                        </div>
-                        <div className="text-center">
-                            <p className="font-bold text-sm uppercase">{session.user.name}</p>
-                            <p className="text-[10px] text-gray-500 uppercase tracking-widest">{session.user.email}</p>
-                        </div>
-                    </div>
-                    <button
-                      onClick={handleLogout}
-                      className="text-xs font-bold text-red-500 hover:text-red-600 uppercase tracking-widest border-b border-red-500/20 pb-0.5"
-                    >
-                      Log Out
-                    </button>
-                  </div>
-                ) : (
-                  <div className="flex flex-col items-center gap-3 w-full">
-                     <Link onClick={() => setIsMenuOpen(false)} href="/signup" className="w-full max-w-xs">
-                        <Button className="w-full py-6 text-sm font-bold uppercase tracking-widest bg-black text-white hover:bg-[#d819e6] rounded-full shadow-lg">
-                            Get Started
-                        </Button>
-                     </Link>
-                     <Link onClick={() => setIsMenuOpen(false)} href="/signin" className="text-xs font-bold text-gray-500 hover:text-black uppercase tracking-widest mt-2">
-                        Sign In
-                     </Link>
-                  </div>
-                )}
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        <motion.nav
-          initial={{ y: 0, opacity: 1 }}
-          animate={{
-            y: isVisible ? 0 : -100,
-            opacity: isVisible ? 1 : 0,
-          }}
-          transition={{ duration: 0.3, ease: "easeInOut" }}
-          className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-7xl bg-white/10 backdrop-blur-lg border border-white/20 shadow-lg rounded-full"
-        >
-          <div className="px-6 md:px-8 h-16 flex items-center justify-between">
-            {/* Logo */}
-            <Link
-              href="/"
-              className="relative z-50 flex items-center"
-            >
-              <Image
-                src="/images/femflareloo2.png"
-                alt="FemFlare Logo"
-                width={250}
-                height={80}
-                className="h-24 w-auto object-contain"
-                priority
-              />
-            </Link>
-
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-8">
-              <Link
-                href="/"
-                className={`font-sans font-medium transition-colors ${pathname === "/" ? "text-[#d819e6] underline underline-offset-[6px] decoration-2" : "hover:text-[#d819e6]"}`}
-              >
-                Home
-              </Link>
-              <Link
-                href="/events"
-                className={`font-sans font-medium transition-colors ${pathname === "/events" ? "text-[#d819e6] underline underline-offset-[6px] decoration-2" : "hover:text-[#d819e6]"}`}
-              >
-                Events
-              </Link>
-              <Link
-                href="/gallery"
-                className={`font-sans font-medium transition-colors ${pathname === "/gallery" ? "text-[#d819e6] underline underline-offset-[6px] decoration-2" : "hover:text-[#d819e6]"}`}
-              >
-                Gallery
-              </Link>
-              <Link
-                href="/visionary"
-                className={`font-sans font-medium transition-colors ${pathname === "/visionary" ? "text-[#d819e6] underline underline-offset-[6px] decoration-2" : "hover:text-[#d819e6]"}`}
-              >
-                Our Visionary
-              </Link>
-              <div className="relative group">
-                <button className={`font-sans font-medium transition-colors flex items-center gap-1 py-4 ${pathname.startsWith("/teams") ? "text-[#d819e6] underline underline-offset-[6px] decoration-2" : "hover:text-[#d819e6]"}`}>
-                  Teams
-                  <ChevronDown className="w-4 h-4" />
-                </button>
-                <div className="absolute top-full left-1/2 -translate-x-1/2 w-48 bg-white/90 backdrop-blur-md border border-white/20 rounded-xl shadow-xl overflow-hidden py-1 opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-all duration-200">
-                  <Link href="/teams/chief-patrons" className={`block px-4 py-2.5 text-sm font-medium transition-colors ${pathname === "/teams/chief-patrons" ? "text-[#d819e6] bg-black/5" : "text-black hover:bg-black/5 hover:text-[#d819e6]"}`}>Chief Patrons</Link>
-                  <Link href="/teams/chairpersons" className={`block px-4 py-2.5 text-sm font-medium transition-colors ${pathname === "/teams/chairpersons" ? "text-[#d819e6] bg-black/5" : "text-black hover:bg-black/5 hover:text-[#d819e6]"}`}>Chairpersons</Link>
-                  <Link href="/teams/conveners" className={`block px-4 py-2.5 text-sm font-medium transition-colors ${pathname === "/teams/conveners" ? "text-[#d819e6] bg-black/5" : "text-black hover:bg-black/5 hover:text-[#d819e6]"}`}>Conveners</Link>
-                  <Link href="/teams/co-conveners" className={`block px-4 py-2.5 text-sm font-medium transition-colors ${pathname === "/teams/co-conveners" ? "text-[#d819e6] bg-black/5" : "text-black hover:bg-black/5 hover:text-[#d819e6]"}`}>Co-Conveners</Link>
-                </div>
-              </div>
-              {session && (
-                <Link
-                  href="/registered-events"
-                  className={`font-sans font-medium transition-colors ${pathname === "/registered-events" ? "text-[#d819e6] underline underline-offset-[6px] decoration-2" : "hover:text-[#d819e6]"}`}
-                >
-                  My Events
-                </Link>
-              )}
-              {(session?.user as any)?.role === "ADMIN" && (
-                <Link
-                  href="/admin/events"
-                  className={`font-sans font-bold transition-colors ${pathname === "/admin/events" ? "text-black underline underline-offset-[6px] decoration-2" : "text-[#d819e6] hover:text-black"}`}
-                >
-                  Admin
-                </Link>
-              )}
-            </div>
-
-            {/* Desktop Auth / Profile */}
-            <div className="hidden md:flex items-center space-x-4">
-              {isPending ? (
-                <div className="w-24 h-10 bg-gray-200/50 animate-pulse rounded"></div>
-              ) : session ? (
-                <div className="relative">
-                  <button
-                    onClick={() => setIsProfileOpen(!isProfileOpen)}
-                    className="flex items-center space-x-3 bg-white/50 px-4 py-2 rounded-full border border-white/30 backdrop-blur-sm hover:bg-white/70 transition-colors"
-                  >
-                    <div className="w-8 h-8 bg-[#d819e6] rounded-full flex items-center justify-center text-white font-bold">
-                      {session.user.name?.[0]?.toUpperCase() || (
-                        <User size={16} />
-                      )}
-                    </div>
-                    <span className="font-medium text-sm truncate max-w-[100px]">
-                      {session.user.name}
-                    </span>
-                  </button>
-
-                  {/* Desktop Profile Dropdown */}
-                  <AnimatePresence>
-                    {isProfileOpen && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
                         transition={{ duration: 0.2 }}
-                        className="absolute right-0 top-full mt-2 w-48 bg-white/90 backdrop-blur-md border border-white/20 rounded-xl shadow-xl overflow-hidden py-1"
-                      >
-                        <button
-                          onClick={handleLogout}
-                          className="w-full text-left px-4 py-3 text-sm font-medium text-red-600 hover:bg-red-50 flex items-center transition-colors"
-                        >
-                          <LogOut size={16} className="mr-2" />
-                          Sign Out
-                        </button>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              ) : (
-                <>
-                  <Link href="/signin">
-                    <span className="font-medium hover:text-[#d819e6] transition-colors cursor-pointer">
-                      Sign In
-                    </span>
-                  </Link>
-                  <Link href="/signup">
-                    <Button className="py-2 rounded-2xl px-6 text-sm">
-                      Sign Up
-                    </Button>
-                  </Link>
-                </>
-              )}
-            </div>
+                        className="fixed inset-0 z-40 md:hidden"
+                        onClick={() => setIsMenuOpen(false)}
+                    />
+                )}
+            </AnimatePresence>
 
-            {/* Mobile Menu Button - Animated */}
-            <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="md:hidden relative z-50 p-2 text-black focus:outline-none"
+            <nav className={`fixed top-0 left-0 z-50 w-full transition-all duration-300 ${scrolled ? 'py-0' : 'py-2'}`}
+                style={{
+                    background: (scrolled || isMenuOpen) ? '#fdf5f7' : 'transparent',
+                    backdropFilter: (scrolled || isMenuOpen) ? 'blur(10px)' : 'none',
+                    boxShadow: (scrolled || isMenuOpen) ? '0 4px 20px rgba(0, 0, 0, 0.08)' : 'none',
+                }}
             >
-              <motion.div
-                animate={isMenuOpen ? "open" : "closed"}
-                className="w-6 h-6 flex flex-col justify-center items-center"
-              >
-                <motion.span
-                  variants={{
-                    closed: { rotate: 0, y: 0 },
-                    open: { rotate: 45, y: 8 },
-                  }}
-                  className="w-6 h-0.5 bg-black block mb-1.5 rounded-full"
-                ></motion.span>
-                <motion.span
-                  variants={{
-                    closed: { opacity: 1 },
-                    open: { opacity: 0 },
-                  }}
-                  className="w-6 h-0.5 bg-black block mb-1.5 rounded-full"
-                ></motion.span>
-                <motion.span
-                  variants={{
-                    closed: { rotate: 0, y: 0 },
-                    open: { rotate: -45, y: -8 },
-                  }}
-                  className="w-6 h-0.5 bg-black block rounded-full"
-                ></motion.span>
-              </motion.div>
-            </button>
-          </div>
-        </motion.nav>
-      </AnimatePresence>
-    </>
-  );
+                <div className="px-4 md:px-8 h-16 flex items-center justify-between">
+
+                    {/* Logo Section */}
+                    <Link href="/" onClick={(e) => handleLinkClick(e, '/')} className={`flex items-center gap-1.5 md:gap-4 text-xl font-bold tracking-tighter uppercase relative z-50 group transition-colors duration-300 ${(scrolled || isMenuOpen) ? 'text-gray-900' : 'text-white'}`}>
+                        {/* KL Logo - Left */}
+                        <div className="h-5 w-11 md:h-28 md:w-20 relative overflow-hidden shrink-0">
+                            <Image
+                                src="/images/kl.PNG"
+                                alt="KL University Logo"
+                                fill
+                                className="object-contain"
+                            />
+                        </div>
+
+                        {/* Title Text - Middle */}
+                        <span className="text-[13px] min-[360px]:text-[14px] min-[400px]:text-[15px] sm:text-base lg:text-xl font-black whitespace-nowrap leading-tight">
+                            Women Development Cell
+                        </span>
+
+                        {/* WDC Circle Logo - Right */}
+                        <div className="w-6 h-6 md:w-10 md:h-10 relative rounded-full overflow-hidden shadow-md ring-1 md:ring-2 ring-white bg-white shrink-0">
+                            <Image
+                                src="/womensummits.png"
+                                alt="WDC Logo"
+                                fill
+                                className="object-cover scale-140"
+                            />
+                        </div>
+                    </Link>
+
+                    {/* Desktop Navigation */}
+                    <div className="hidden md:flex items-center justify-end flex-1 space-x-6 mr-6">
+                        <Link href="/" onClick={(e) => handleLinkClick(e, '/')} className={`font-sans font-semibold transition-colors capitalize tracking-wide relative group text-sm ${pathname === "/" ? (scrolled ? 'text-black' : 'text-white') : (scrolled ? 'text-gray-600 hover:text-black' : 'text-white/90 hover:text-white')}`}>
+                            Home
+                            <span className={`absolute left-0 -bottom-1 h-[2px] transition-all duration-300 group-hover:w-full ${pathname === "/" ? 'w-full' : 'w-0'} ${scrolled ? 'bg-[#ec4899]' : 'bg-white'}`} />
+                        </Link>
+                        <Link href="/events" onClick={(e) => handleLinkClick(e, '/events')} className={`font-sans font-semibold transition-colors capitalize tracking-wide relative group text-sm ${pathname === "/events" ? (scrolled ? 'text-black' : 'text-white') : (scrolled ? 'text-gray-600 hover:text-black' : 'text-white/90 hover:text-white')}`}>
+                            Events
+                            <span className={`absolute left-0 -bottom-1 h-[2px] transition-all duration-300 group-hover:w-full ${pathname === "/events" ? 'w-full' : 'w-0'} ${scrolled ? 'bg-[#ec4899]' : 'bg-white'}`} />
+                        </Link>
+                        <Link href="/gallery" onClick={(e) => handleLinkClick(e, '/gallery')} className={`font-sans font-semibold transition-colors capitalize tracking-wide relative group text-sm ${pathname === "/gallery" ? (scrolled ? 'text-black' : 'text-white') : (scrolled ? 'text-gray-600 hover:text-black' : 'text-white/90 hover:text-white')}`}>
+                            Gallery
+                            <span className={`absolute left-0 -bottom-1 h-[2px] transition-all duration-300 group-hover:w-full ${pathname === "/gallery" ? 'w-full' : 'w-0'} ${scrolled ? 'bg-[#ec4899]' : 'bg-white'}`} />
+                        </Link>
+                        <Link href="/visionary" onClick={(e) => handleLinkClick(e, '/visionary')} className={`font-sans font-semibold transition-colors capitalize tracking-wide relative group text-sm ${pathname === "/visionary" ? (scrolled ? 'text-black' : 'text-white') : (scrolled ? 'text-gray-600 hover:text-black' : 'text-white/90 hover:text-white')}`}>
+                            Our Visionary
+                            <span className={`absolute left-0 -bottom-1 h-[2px] transition-all duration-300 group-hover:w-full ${pathname === "/visionary" ? 'w-full' : 'w-0'} ${scrolled ? 'bg-[#ec4899]' : 'bg-white'}`} />
+                        </Link>
+                        <div className="relative group">
+                            <button className={`font-sans font-semibold transition-colors capitalize tracking-wide relative text-sm flex items-center gap-1 outline-none ${pathname?.startsWith('/teams') ? (scrolled ? 'text-black' : 'text-white') : (scrolled ? 'text-gray-600 hover:text-black' : 'text-white/90 hover:text-white')}`}>
+                                Teams
+                                <ChevronDown className="w-3.5 h-3.5 transition-transform duration-200 group-hover:rotate-180" />
+                                <span className={`absolute left-0 -bottom-1 h-[2px] transition-all duration-300 group-hover:w-full ${pathname?.startsWith('/teams') ? 'w-full' : 'w-0'} ${scrolled ? 'bg-[#ec4899]' : 'bg-white'}`} />
+                            </button>
+                            {/* Desktop Dropdown */}
+                            <div className="absolute top-full left-1/2 -translate-x-1/2 pt-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                                <div className="bg-white rounded-xl shadow-xl shadow-black/10 border border-gray-100 overflow-hidden min-w-[200px]">
+                                    {[
+                                        { name: 'Chief Patrons', href: '/teams/chief-patrons' },
+                                        { name: 'Chairpersons', href: '/teams/chairpersons' },
+                                        { name: 'Conveners', href: '/teams/conveners' },
+                                        { name: 'Co-Conveners', href: '/teams/co-conveners' }
+                                    ].map((team) => (
+                                        <Link
+                                            key={team.name}
+                                            href={team.href}
+                                            className={`block px-5 py-3 text-sm font-bold transition-all capitalize tracking-wider border-b border-gray-50 last:border-b-0 ${
+                                                pathname === team.href
+                                                    ? 'bg-gradient-to-r from-[#ec4899] to-[#f97316] text-white'
+                                                    : 'text-[#0f172a] hover:bg-gradient-to-r hover:from-[#ec4899] hover:to-[#f97316] hover:text-white'
+                                            }`}
+                                        >
+                                            {team.name}
+                                        </Link>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                        {session && (
+                            <Link href="/registered-events" onClick={(e) => handleLinkClick(e, '/registered-events')} className={`font-sans font-semibold transition-colors capitalize tracking-wide relative group text-sm ${pathname === "/registered-events" ? (scrolled ? 'text-black' : 'text-white') : (scrolled ? 'text-gray-600 hover:text-black' : 'text-white/90 hover:text-white')}`}>
+                                My Events
+                                <span className={`absolute left-0 -bottom-1 h-[2px] transition-all duration-300 group-hover:w-full ${pathname === "/registered-events" ? 'w-full' : 'w-0'} ${scrolled ? 'bg-[#ec4899]' : 'bg-white'}`} />
+                            </Link>
+                        )}
+                        {(session?.user as any)?.role === "ADMIN" && (
+                            <Link href="/admin/events" onClick={(e) => handleLinkClick(e, '/admin/events')} className={`font-sans font-bold transition-colors capitalize tracking-wide relative group text-sm ${pathname?.startsWith("/admin") ? (scrolled ? 'text-black' : 'text-white') : (scrolled ? 'text-gray-600 hover:text-black' : 'text-white/90 hover:text-white')}`}>
+                                Admin
+                                <span className={`absolute left-0 -bottom-1 h-[2px] transition-all duration-300 group-hover:w-full ${pathname?.startsWith("/admin") ? 'w-full' : 'w-0'} ${scrolled ? 'bg-[#ec4899]' : 'bg-white'}`} />
+                            </Link>
+                        )}
+                    </div>
+
+                    {/* Auth Section / Profile */}
+                    <div className="hidden md:flex items-center space-x-4">
+                        {session ? (
+                            <div className="relative" ref={profileRef}>
+                                <button
+                                    onClick={() => setIsProfileOpen(!isProfileOpen)}
+                                    className="flex items-center space-x-2 bg-gradient-to-r from-[#ec4899] to-[#f97316] text-white px-4 py-2 rounded-xl shadow-lg hover:shadow-xl transition-all active:scale-95"
+                                >
+                                    <User size={18} />
+                                    <span className="font-medium text-sm">{session?.user?.name || 'Profile'}</span>
+                                    <ChevronDown size={14} className={`transition-transform duration-200 ${isProfileOpen ? 'rotate-180' : ''}`} />
+                                </button>
+                                <AnimatePresence>
+                                    {isProfileOpen && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            exit={{ opacity: 0, y: 10 }}
+                                            transition={{ duration: 0.2 }}
+                                            className="absolute right-0 top-full mt-2 w-48 bg-white/95 backdrop-blur-md border border-gray-100 rounded-xl shadow-2xl overflow-hidden py-1 z-50 text-gray-900"
+                                        >
+                                            <button
+                                                onClick={handleLogout}
+                                                className="w-full text-left px-4 py-3 text-sm font-semibold text-red-600 hover:bg-red-50 flex items-center transition-colors"
+                                            >
+                                                <LogOut size={16} className="mr-2" />
+                                                Sign Out
+                                            </button>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
+                        ) : (
+                            <div className="flex items-center space-x-4">
+                                <Link href="/signin">
+                                    <span className={`font-bold text-sm tracking-wide transition-colors cursor-pointer ${scrolled ? 'text-gray-700 hover:text-black' : 'text-white/90 hover:text-white'}`}>
+                                        Sign In
+                                    </span>
+                                </Link>
+                                <Link href="/signup">
+                                    <Button className="py-2 rounded-xl px-6 text-sm font-bold bg-white text-black hover:bg-gray-100 shadow-lg transition-all active:scale-95">
+                                        Sign Up
+                                    </Button>
+                                </Link>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Mobile Menu Button - Animated */}
+                    <button
+                        onClick={() => setIsMenuOpen(!isMenuOpen)}
+                        className={`md:hidden relative z-50 p-2 focus:outline-none transition-colors ${(scrolled || isMenuOpen) ? 'text-gray-900' : 'text-white'}`}
+                    >
+                        <motion.div
+                            animate={isMenuOpen ? "open" : "closed"}
+                            className="w-6 h-6 flex flex-col justify-center items-center"
+                        >
+                            <motion.span
+                                variants={{
+                                    closed: { rotate: 0, y: 0 },
+                                    open: { rotate: 45, y: 8 },
+                                }}
+                                className={`w-6 h-0.5 block mb-1.5 rounded-full transition-colors ${(scrolled || isMenuOpen) ? 'bg-gray-900' : 'bg-white'}`}
+                            ></motion.span>
+                            <motion.span
+                                variants={{
+                                    closed: { opacity: 1 },
+                                    open: { opacity: 0 },
+                                }}
+                                className={`w-6 h-0.5 block mb-1.5 rounded-full transition-colors ${(scrolled || isMenuOpen) ? 'bg-gray-900' : 'bg-white'}`}
+                            ></motion.span>
+                            <motion.span
+                                variants={{
+                                    closed: { rotate: 0, y: 0 },
+                                    open: { rotate: -45, y: -8 },
+                                }}
+                                className={`w-6 h-0.5 block rounded-full transition-colors ${(scrolled || isMenuOpen) ? 'bg-gray-900' : 'bg-white'}`}
+                            ></motion.span>
+                        </motion.div>
+                    </button>
+                </div>
+
+                {/* Mobile Dropdown Menu */}
+                <AnimatePresence>
+                    {isMenuOpen && (
+                        <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                            className="md:hidden overflow-hidden border-t border-gray-100 bg-[#fdf5f7]"
+                        >
+                            <div className="px-6 py-4 flex flex-col space-y-1">
+                                {[
+                                    { name: 'Home', href: '/' },
+                                    { name: 'Events', href: '/events' },
+                                    { name: 'Gallery', href: '/gallery' },
+                                    { name: 'Our Visionary', href: '/visionary' },
+                                    { name: 'Teams', href: '/teams/chief-patrons' } // Default link
+                                ].map((item, idx) => (
+                                    <motion.div
+                                        key={item.href}
+                                        initial={{ opacity: 0, x: -20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ delay: 0.1 + idx * 0.05 }}
+                                    >
+                                        <Link
+                                            onClick={(e) => handleLinkClick(e, item.href)}
+                                            href={item.href}
+                                            className={`flex items-center justify-center gap-3 px-4 py-3 rounded-xl transition-all text-lg font-bold capitalize tracking-wide ${
+                                                pathname === item.href ? 'text-[#ec4899] bg-pink-50' : 'text-black hover:bg-gray-50'
+                                            }`}
+                                        >
+                                            {item.name}
+                                        </Link>
+                                    </motion.div>
+                                ))}
+
+                                {session && (
+                                    <motion.div
+                                        initial={{ opacity: 0, x: -20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ delay: 0.35 }}
+                                    >
+                                        <Link
+                                            onClick={(e) => handleLinkClick(e, '/registered-events')}
+                                            href="/registered-events"
+                                            className={`flex items-center justify-center gap-3 px-4 py-3 rounded-xl transition-all text-lg font-bold capitalize tracking-wide ${
+                                                pathname === '/registered-events' ? 'text-[#ec4899] bg-pink-50' : 'text-black hover:bg-gray-50'
+                                            }`}
+                                        >
+                                            My Events
+                                        </Link>
+                                    </motion.div>
+                                )}
+
+                                {session ? (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: 0.4 }}
+                                        className="pt-4 px-4"
+                                    >
+                                        <button
+                                            onClick={handleLogout}
+                                            className="w-full py-3.5 rounded-full text-sm font-bold uppercase tracking-wider bg-red-600 text-white shadow-lg shadow-red-500/20 active:scale-95 transition-all text-center"
+                                        >
+                                            Sign Out
+                                        </button>
+                                    </motion.div>
+                                ) : (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: 0.4 }}
+                                        className="pt-4 px-4 space-y-3"
+                                    >
+                                        <Link href="/signin" onClick={() => setIsMenuOpen(false)} className="w-full py-3.5 rounded-full text-sm font-bold uppercase tracking-wider border-2 border-gray-200 text-black active:scale-95 transition-all block text-center">
+                                            Sign In
+                                        </Link>
+                                        <Link href="/signup" onClick={() => setIsMenuOpen(false)} className="w-full py-3.5 rounded-full text-sm font-bold uppercase tracking-wider bg-gradient-to-r from-[#ec4899] to-[#f97316] text-white shadow-lg active:scale-95 transition-all block text-center">
+                                            Sign Up
+                                        </Link>
+                                    </motion.div>
+                                )}
+
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+
+                {/* Gradient separator line - visible when scrolled */}
+                <div
+                    className={`h-[2.50px] w-full bg-gradient-to-r from-[#ec4899] via-[#f97316] to-[#ec4899] transition-opacity duration-300 ${(scrolled || isMenuOpen) ? 'opacity-100' : 'opacity-0'}`}
+                />
+            </nav >
+        </>
+    );
 };
 
 export default Navbar;

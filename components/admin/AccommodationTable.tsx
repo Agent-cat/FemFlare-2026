@@ -15,6 +15,11 @@ interface User {
   department: string | null;
   address: string | null;
   createdAt: Date;
+  registrations: {
+    event: {
+      title: string;
+    };
+  }[];
 }
 
 interface AccommodationTableProps {
@@ -31,6 +36,7 @@ export default function AccommodationTable({ users }: AccommodationTableProps) {
       'Student ID': user.studentId || 'N/A',
       Department: user.department || 'N/A',
       Address: user.address || 'N/A',
+      'Registered Events': user.registrations.map(r => r.event.title).join(", ") || 'No events registered',
       'Registration Date': format(new Date(user.createdAt), "PPP p")
     }));
 
@@ -71,8 +77,8 @@ export default function AccommodationTable({ users }: AccommodationTableProps) {
             <thead className="bg-[#EBE5DB]/50 border-b border-[#DCCEB8]">
               <tr>
                 <th className="px-6 py-4 text-xs font-bold font-oswald uppercase tracking-widest text-gray-500">Name</th>
-                <th className="px-6 py-4 text-xs font-bold font-oswald uppercase tracking-widest text-gray-500">College</th>
-                <th className="px-6 py-4 text-xs font-bold font-oswald uppercase tracking-widest text-gray-500">Department</th>
+                <th className="px-6 py-4 text-xs font-bold font-oswald uppercase tracking-widest text-gray-500">College & Dept</th>
+                <th className="px-6 py-4 text-xs font-bold font-oswald uppercase tracking-widest text-gray-500">Registered Events</th>
                 <th className="px-6 py-4 text-xs font-bold font-oswald uppercase tracking-widest text-gray-500">Phone</th>
                 <th className="px-6 py-4 text-xs font-bold font-oswald uppercase tracking-widest text-gray-500">Student ID</th>
               </tr>
@@ -85,9 +91,24 @@ export default function AccommodationTable({ users }: AccommodationTableProps) {
                       <div className="font-bold text-[#1a1a1a] font-sans">{user.name}</div>
                       <div className="text-xs text-gray-500 font-mono">{user.email}</div>
                     </td>
-                    <td className="px-6 py-4 text-sm font-sans text-gray-700">{user.college || '—'}</td>
-                    <td className="px-6 py-4 text-sm font-sans text-gray-700">{user.department || '—'}</td>
-                    <td className="px-6 py-4 text-sm font-sans text-gray-700">{user.phoneNumber || '—'}</td>
+                    <td className="px-6 py-4">
+                      <div className="text-sm font-sans text-gray-700 font-bold uppercase tracking-tight">{user.college || '—'}</div>
+                      <div className="text-xs text-[#FF5722] font-semibold">{user.department || '—'}</div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex flex-wrap gap-1">
+                        {user.registrations.length > 0 ? (
+                          user.registrations.map((reg, i) => (
+                            <span key={i} className="inline-block px-2 py-0.5 bg-gray-100 text-gray-700 text-[10px] font-bold rounded-md border border-gray-200 uppercase tracking-tight">
+                              {reg.event.title}
+                            </span>
+                          ))
+                        ) : (
+                          <span className="text-xs text-gray-400 italic">No events</span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-sm font-sans text-gray-700 font-medium">{user.phoneNumber || '—'}</td>
                     <td className="px-6 py-4 text-sm font-mono text-gray-700">{user.studentId || '—'}</td>
                   </tr>
                 ))
