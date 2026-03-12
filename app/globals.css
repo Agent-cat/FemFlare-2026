@@ -2,6 +2,8 @@
 
 @theme {
   --font-sans: var(--font-outfit);
+  --font-outfit: var(--font-outfit);
+  --font-quicksand: var(--font-quicksand);
   --font-oswald: var(--font-oswald);
   --font-milker: Milker;
   --font-poppins: var(--font-poppins);

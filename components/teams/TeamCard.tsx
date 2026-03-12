@@ -13,36 +13,38 @@ interface TeamMember {
 export default function TeamCard({ member, index }: { member: TeamMember, index: number }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ duration: 0.5, delay: index * 0.1 }}
-      className="group relative"
+      transition={{ duration: 0.6, delay: index * 0.1, ease: "easeOut" }}
+      className="group w-full max-w-[280px] mx-auto"
     >
-      <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-[#EBE5DB] border border-black/5 shadow-xl transition-all duration-500 group-hover:shadow-2xl group-hover:-translate-y-2">
-        <Image
-          src={member.image}
-          alt={member.name}
-          fill
-          className="object-cover transition-transform duration-700 group-hover:scale-110"
-        />
-        {/* Overlay Gradient */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 transition-opacity duration-500 group-hover:opacity-80" />
+      <div className="relative flex flex-col overflow-hidden rounded-[1.5rem] border-[3px] border-[#f97316] bg-white shadow-[0_10px_25px_rgba(249,115,22,0.08)] transition-all duration-500 hover:shadow-[0_15px_35px_rgba(249,115,22,0.15)] hover:-translate-y-1">
+        {/* Image Section */}
+        <div className="p-2 pb-0">
+          <div className="relative aspect-[4/5] overflow-hidden rounded-[1rem] bg-gray-100">
+            <Image
+              src={member.image}
+              alt={member.name}
+              fill
+              className="object-cover transition-transform duration-1000 group-hover:scale-105"
+              sizes="(max-w-768px) 100vw, 300px"
+            />
+          </div>
+        </div>
 
-        {/* Content Info */}
-        <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8 transform transition-transform duration-500">
-           <div className="h-1 w-12 bg-[#FF5722] mb-4 transform origin-left transition-transform duration-500 group-hover:scale-x-150" />
-           <h3 className="text-white font-oswald text-xl md:text-2xl font-bold uppercase tracking-tight leading-tight mb-2">
+        {/* Info Section */}
+        <div className="p-4 pb-5 text-center flex flex-col items-center justify-center min-h-[110px]">
+           <h3 className="text-[#1a1a1a] font-mono text-lg md:text-xl font-bold tracking-tight mb-1.5 leading-tight"
+               style={{ fontFamily: 'var(--font-jetbrains-mono), monospace' }}>
              {member.name}
            </h3>
-           <p className="text-white/70 text-sm font-medium uppercase tracking-[0.1em] font-sans leading-relaxed">
+           <p className="text-[#f97316] font-mono text-[10px] md:text-[11px] font-bold uppercase tracking-[0.1em] leading-tight max-w-[95%]"
+              style={{ fontFamily: 'var(--font-jetbrains-mono), monospace' }}>
              {member.role}
            </p>
         </div>
       </div>
-
-      {/* Decorative Border that appears on hover */}
-      <div className="absolute inset-0 rounded-2xl border-2 border-[#FF5722] opacity-0 scale-105 transition-all duration-500 group-hover:opacity-100 group-hover:scale-100 pointer-events-none" />
     </motion.div>
   );
 }

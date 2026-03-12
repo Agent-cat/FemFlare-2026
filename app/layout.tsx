@@ -1,6 +1,6 @@
 import React from "react";
 import type { Metadata } from "next";
-import { Outfit, Oswald, Poppins } from "next/font/google";
+import { Outfit, Oswald, Poppins, Quicksand, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import SmoothScroll from "@/components/providers/SmoothScroll";
 import Navbar from "@/components/layout/Navbar";
@@ -14,6 +14,12 @@ const outfit = Outfit({
   subsets: ["latin"],
 });
 
+const quicksand = Quicksand({
+  variable: "--font-quicksand",
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+});
+
 const oswald = Oswald({
   variable: "--font-oswald",
   subsets: ["latin"],
@@ -23,6 +29,11 @@ const poppins = Poppins({
   variable: "--font-poppins",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800"],
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains-mono",
+  subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
@@ -41,7 +52,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${outfit.variable} ${oswald.variable} ${poppins.variable} antialiased font-sans`}
+        className={`${outfit.variable} ${quicksand.variable} ${oswald.variable} ${poppins.variable} ${jetbrainsMono.variable} antialiased font-sans`}
       >
         <SmoothScroll>
           <CustomCursor />
