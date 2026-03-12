@@ -17,11 +17,12 @@ const chairpersons = [
     role: "Director Alumni-Relations, KLEF",
     image: "/chairpersons/DR.%20K.%20CH.%20SRI%20KAVYA.jpg"
   },
+  
   {
-    name: "Dr. I. Govardhani",
-    role: "HHOD-ECE, KLEF",
-    image: "/chairpersons/DR.%20I.%20GOVARDHANI.jpg"
-  }
+    name: "Dr. K. Sony",
+    role: "Assistant Director-Alumni Relations & Co-Convener Women Development Cell, KLEF",
+    image: "/co-conveners/DR.%20K.%20SONY.jpg"
+  },
 ];
 
 export default function ChairpersonsPage() {

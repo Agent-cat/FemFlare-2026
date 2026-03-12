@@ -107,6 +107,15 @@ export async function getUsersNeedAccommodation() {
                 department: true,
                 address: true,
                 createdAt: true,
+                registrations: {
+                    select: {
+                        event: {
+                            select: {
+                                title: true
+                            }
+                        }
+                    }
+                }
             }
         });
         return { success: true, users };
