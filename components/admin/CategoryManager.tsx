@@ -9,9 +9,10 @@ import { toast } from 'sonner';
 interface Category {
   id: string;
   title: string;
+  slug: string;
   description: string | null;
-  image?: string | null;
-  slug?: string;
+  image: string | null;
+  displayOrder: number;
   events?: any[];
 }
 
@@ -97,6 +98,17 @@ export default function CategoryManager({ initialCategories }: { initialCategori
                     />
                 </div>
                 <div>
+                     <label className="block text-sm font-bold text-gray-700 mb-2 font-oswald uppercase tracking-wide">Display Order</label>
+                     <input
+                        type="number"
+                        name="displayOrder"
+                        defaultValue={editingCategory?.displayOrder || 0}
+                        className="w-full px-5 py-3 rounded-xl border border-[#DCCEB8] bg-white focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#FF5722]/20 focus:border-[#FF5722] transition-all font-sans"
+                        placeholder="e.g. 1"
+                    />
+                    <p className="text-[10px] text-gray-400 mt-1 uppercase tracking-widest font-bold">Lower numbers appear first.</p>
+                </div>
+                <div>
                      <label className="block text-sm font-bold text-gray-700 mb-2 font-oswald uppercase tracking-wide">Description</label>
                      <textarea
                         name="description"
@@ -139,8 +151,11 @@ export default function CategoryManager({ initialCategories }: { initialCategori
                 className="group bg-white p-6 rounded-xl border border-gray-200 hover:border-[#FF5722] hover:shadow-md cursor-pointer transition-all duration-200 relative"
             >
                 <div className="flex items-start justify-between mb-4">
-                    <div className="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center text-gray-400 group-hover:text-[#FF5722] transition-colors">
-                        {cat.image ? <ImageIcon className="w-5 h-5" /> : <Folder className="w-5 h-5" />}
+                    <div className="flex flex-col items-center gap-1">
+                        <div className="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center text-gray-400 group-hover:text-[#FF5722] transition-colors relative">
+                            {cat.image ? <ImageIcon className="w-5 h-5" /> : <Folder className="w-5 h-5" />}
+                        </div>
+                        <span className="text-[10px] font-black font-oswald text-gray-300">#{cat.displayOrder || 0}</span>
                     </div>
 
                     <div className="flex gap-2">

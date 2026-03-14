@@ -86,6 +86,7 @@ model EventCategory {
   slug        String   @unique @default(cuid())
   description String?
   image       String?
+  displayOrder Int      @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   events      Event[]
@@ -93,6 +94,7 @@ model EventCategory {
   @@map("event_category")
   @@index([slug])
   @@index([createdAt])
+  @@index([displayOrder])
 }
 
 model Event {

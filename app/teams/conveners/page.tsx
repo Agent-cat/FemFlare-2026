@@ -15,7 +15,7 @@ const conveners = [
   },
   {
     //dnds
-    name: "Dr. P.Raja Rajeshwari",
+    name: "Dr. P.Raja Rajeswari",
     role: "HOD-CSE, KLEF",
     image: "/conveners/rajeshwari.jpeg",
   },

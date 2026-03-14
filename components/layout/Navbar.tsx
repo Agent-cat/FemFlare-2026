@@ -15,6 +15,7 @@ const Navbar = () => {
     const router = useRouter();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
+    const [isTeamsOpen, setIsTeamsOpen] = useState(false);
     const [mounted, setMounted] = useState(false);
     const profileRef = useRef<HTMLDivElement>(null);
 
@@ -127,7 +128,7 @@ const Navbar = () => {
                         </div>
 
                         {/* Title Text - Middle */}
-                        <span className="text-[13px] min-[360px]:text-[14px] min-[400px]:text-[15px] sm:text-base lg:text-xl font-black whitespace-nowrap leading-tight">
+                        <span className="text-[13px] text-black min-[360px]:text-[14px] min-[400px]:text-[15px] sm:text-base lg:text-xl font-black whitespace-nowrap leading-tight">
                             Women Development Cell
                         </span>
 
@@ -173,7 +174,8 @@ const Navbar = () => {
                                         { name: 'Chief Patrons', href: '/teams/chief-patrons' },
                                         { name: 'Chairpersons', href: '/teams/chairpersons' },
                                         { name: 'Conveners', href: '/teams/conveners' },
-                                        { name: 'Co-Conveners', href: '/teams/co-conveners' }
+                                        { name: 'Co-Conveners', href: '/teams/co-conveners' },
+                                        { name: 'Chief Executives', href: '/teams/chief-executives' }
                                     ].map((team) => (
                                         <Link
                                             key={team.name}
@@ -237,16 +239,16 @@ const Navbar = () => {
                                 </AnimatePresence>
                             </div>
                         ) : (
-                            <div className="flex items-center space-x-4">
+                            <div className="flex items-center gap-3">
                                 <Link href="/signin">
-                                    <span className={`font-bold text-sm tracking-wide transition-colors cursor-pointer ${scrolled ? 'text-gray-700 hover:text-black' : 'text-white/90 hover:text-white'}`}>
+                                    <button className={`px-4 py-2 rounded-xl text-sm font-bold transition-all hover:bg-black/5 active:scale-95 ${scrolled ? 'text-gray-700' : 'text-white'}`}>
                                         Sign In
-                                    </span>
+                                    </button>
                                 </Link>
                                 <Link href="/signup">
-                                    <Button className="py-2 rounded-xl px-6 text-sm font-bold bg-white text-black hover:bg-gray-100 shadow-lg transition-all active:scale-95">
+                                    <button className="px-6 py-2 rounded-xl text-sm font-bold bg-[#1a1a1a] text-white hover:bg-black shadow-lg shadow-black/10 transition-all active:scale-95">
                                         Sign Up
-                                    </Button>
+                                    </button>
                                 </Link>
                             </div>
                         )}
@@ -302,7 +304,6 @@ const Navbar = () => {
                                     { name: 'Events', href: '/events' },
                                     { name: 'Gallery', href: '/gallery' },
                                     { name: 'Our Visionary', href: '/visionary' },
-                                    { name: 'Teams', href: '/teams/chief-patrons' } // Default link
                                 ].map((item, idx) => (
                                     <motion.div
                                         key={item.href}
@@ -321,6 +322,61 @@ const Navbar = () => {
                                         </Link>
                                     </motion.div>
                                 ))}
+
+                                {/* Teams accordion */}
+                                <motion.div
+                                    initial={{ opacity: 0, x: -20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ delay: 0.3 }}
+                                >
+                                    <button
+                                        onClick={() => setIsTeamsOpen(!isTeamsOpen)}
+                                        className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl transition-all text-lg font-bold capitalize tracking-wide ${
+                                            pathname?.startsWith('/teams') ? 'text-[#ec4899] bg-pink-50' : 'text-black hover:bg-gray-50'
+                                        }`}
+                                    >
+                                        Teams
+                                        <ChevronDown className={`w-5 h-5 transition-transform duration-200 ${isTeamsOpen ? 'rotate-180' : ''}`} />
+                                    </button>
+                                    <AnimatePresence>
+                                        {isTeamsOpen && (
+                                            <motion.div
+                                                initial={{ height: 0, opacity: 0 }}
+                                                animate={{ height: 'auto', opacity: 1 }}
+                                                exit={{ height: 0, opacity: 0 }}
+                                                transition={{ duration: 0.25, ease: 'easeInOut' }}
+                                                className="overflow-hidden mt-1 ml-4 border-l-2 border-[#ec4899]/20"
+                                            >
+                                                {[
+                                                    { name: 'Chief Patrons', href: '/teams/chief-patrons' },
+                                                    { name: 'Chairpersons', href: '/teams/chairpersons' },
+                                                    { name: 'Conveners', href: '/teams/conveners' },
+                                                    { name: 'Co-Conveners', href: '/teams/co-conveners' },
+                                                    { name: 'Chief Executives', href: '/teams/chief-executives' },
+                                                ].map((team, i) => (
+                                                    <motion.div
+                                                        key={team.href}
+                                                        initial={{ opacity: 0, x: -10 }}
+                                                        animate={{ opacity: 1, x: 0 }}
+                                                        transition={{ delay: i * 0.04 }}
+                                                    >
+                                                        <Link
+                                                            href={team.href}
+                                                            onClick={() => { setIsMenuOpen(false); setIsTeamsOpen(false); }}
+                                                            className={`flex items-center px-4 py-2.5 text-sm font-semibold capitalize tracking-wide transition-all rounded-lg ml-2 ${
+                                                                pathname === team.href
+                                                                    ? 'text-[#ec4899] bg-pink-50'
+                                                                    : 'text-gray-700 hover:text-[#ec4899] hover:bg-pink-50'
+                                                            }`}
+                                                        >
+                                                            {team.name}
+                                                        </Link>
+                                                    </motion.div>
+                                                ))}
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </motion.div>
 
                                 {session && (
                                     <motion.div
@@ -361,10 +417,10 @@ const Navbar = () => {
                                         transition={{ delay: 0.4 }}
                                         className="pt-4 px-4 space-y-3"
                                     >
-                                        <Link href="/signin" onClick={() => setIsMenuOpen(false)} className="w-full py-3.5 rounded-full text-sm font-bold uppercase tracking-wider border-2 border-gray-200 text-black active:scale-95 transition-all block text-center">
+                                        <Link href="/signin" onClick={() => setIsMenuOpen(false)} className="w-full py-3.5 rounded-full text-sm font-bold uppercase tracking-wider border-2 border-[#1a1a1a]/10 text-black active:scale-95 transition-all block text-center">
                                             Sign In
                                         </Link>
-                                        <Link href="/signup" onClick={() => setIsMenuOpen(false)} className="w-full py-3.5 rounded-full text-sm font-bold uppercase tracking-wider bg-gradient-to-r from-[#ec4899] to-[#f97316] text-white shadow-lg active:scale-95 transition-all block text-center">
+                                        <Link href="/signup" onClick={() => setIsMenuOpen(false)} className="w-full py-3.5 rounded-full text-sm font-bold uppercase tracking-wider bg-[#1a1a1a] text-white shadow-xl shadow-black/20 active:scale-95 transition-all block text-center">
                                             Sign Up
                                         </Link>
                                     </motion.div>

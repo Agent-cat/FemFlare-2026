@@ -1,6 +1,7 @@
 import React, { Suspense } from 'react';
 import EventsBackground from '@/components/events/EventsBackground';
 import EventsList from '@/components/events/EventsList';
+import EventContacts from '@/components/events/EventContacts';
 import { Metadata } from 'next';
 
 export const metadata:Metadata = {
@@ -34,6 +35,8 @@ export default function EventsPage() {
                 </span>
             </h1>
         </div>
+
+        <EventContacts />
 
         {/* Dynamic Content Section */}
         <div className="w-full max-w-screen-2xl mx-auto px-6">

@@ -11,9 +11,10 @@ export const getEventCategories = unstable_cache(
   async () => {
     try {
       const categories = await prisma.eventCategory.findMany({
-        orderBy: { createdAt: 'desc' },
+        orderBy: { displayOrder: 'asc' },
         include: { events: true }
       });
+      console.log(`Fetched ${categories.length} categories for admin`);
       return { success: true, data: categories };
     } catch (error) {
       console.error("Failed to fetch categories:", error);
@@ -37,16 +38,19 @@ export async function createCategory(formData: FormData) {
     const slug = slugify(title, { lower: true, strict: true });
     const imageUrl = await saveFile(imageFile);
 
+    const displayOrder = parseInt(formData.get('displayOrder') as string || '0');
+
     await prisma.eventCategory.create({
       data: {
         title,
         slug,
         description,
         image: imageUrl,
+        displayOrder,
       },
     });
 
-    revalidateTag('event-categories', "max");
+    revalidateTag('event-categories','max');
     return { success: true };
   } catch (error) {
     console.error("Failed to create category:", error);
@@ -59,7 +63,7 @@ export async function deleteCategory(categoryId: string) {
         await prisma.eventCategory.delete({
             where: { id: categoryId }
         });
-        revalidateTag('event-categories', "max");
+        revalidateTag('event-categories','max');
         return { success: true };
     } catch (error) {
         console.error("Failed to delete category:", error);
@@ -77,7 +81,11 @@ export async function updateCategory(categoryId: string, formData: FormData) {
   }
 
   try {
+    const displayOrder = formData.get('displayOrder') as string;
     const data: any = { title, description };
+    if (displayOrder) {
+        data.displayOrder = parseInt(displayOrder);
+    }
     if (imageFile && imageFile.size > 0) {
         data.image = await saveFile(imageFile);
     }
@@ -87,7 +95,7 @@ export async function updateCategory(categoryId: string, formData: FormData) {
       data,
     });
 
-    revalidateTag('event-categories', "max");
+    revalidateTag('event-categories','max');
     return { success: true };
   } catch (error) {
     console.error("Failed to update category:", error);
@@ -136,9 +144,9 @@ export async function updateEvent(eventId: string, categoryId: string, formData:
       data,
     });
 
-    revalidateTag(`category-events-${categoryId}`, "max");
-    revalidateTag('event-categories', "max");
-    revalidateTag(`event-${eventId}`, "max");
+    revalidateTag(`category-events-${categoryId}`,'max');
+    revalidateTag('event-categories','max');
+    revalidateTag(`event-${eventId}`,'max');
 
     return { success: true };
   } catch (error) {
@@ -160,7 +168,12 @@ export async function getCategoryEvents(categoryId: string, page: number = 1, li
         where: { categoryId },
         orderBy: { startDate: 'asc' },
         skip,
-        take: limit + 1
+        take: limit + 1,
+        include: {
+          _count: {
+            select: { registrations: true }
+          }
+        }
       }),
       prisma.event.count({ where: { categoryId } }),
       prisma.eventCategory.findUnique({
@@ -238,7 +251,7 @@ export async function deleteEvent(eventId: string, categoryId: string) {
             where: { id: eventId }
         });
         revalidateTag(`category-events-${categoryId}`, "max");
-        revalidateTag('event-categories', "max");
+        revalidateTag('event-categories','max');
         return { success: true };
     } catch (error) {
          console.error("Failed to delete event:", error);
@@ -321,7 +334,9 @@ export async function registerForEvent(userId: string, eventId: string) {
       },
     });
 
-    revalidateTag(`user-registrations-${userId}`, "max"); // Using standard revalidateTag
+    revalidateTag(`user-registrations-${userId}`,'max');
+    revalidateTag(`event-${eventId}`,'max');
+    revalidateTag(`category-events-${newEvent.categoryId}`,'max');
     return { success: true };
   } catch (error: any) {
     if (error.code === 'P2002') {
@@ -380,8 +395,14 @@ export async function unregisterFromEvent(eventId: string, userId: string) {
             }
         });
 
-        revalidateTag(`user-registrations-${userId}`,"max");
+        revalidateTag(`user-registrations-${userId}`,'max');
         revalidateTag(`registration-${userId}-${eventId}`,'max');
+        revalidateTag(`event-${eventId}`,'max');
+
+        const event = await prisma.event.findUnique({ where: { id: eventId }, select: { categoryId: true } });
+        if (event) {
+            revalidateTag(`category-events-${event.categoryId}`,'max');
+        }
 
         return { success: true };
     } catch (error) {
@@ -395,7 +416,7 @@ export const getPaginatedEventCategories = unstable_cache(
         try {
             const skip = (page - 1) * limit;
             const categories = await prisma.eventCategory.findMany({
-                orderBy: { createdAt: 'desc' },
+                orderBy: { displayOrder: 'asc' },
                 include: { events: true },
                 skip,
                 take: limit + 1, // Take one extra to check if there's more

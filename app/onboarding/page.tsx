@@ -218,16 +218,39 @@ export default function OnboardingPage() {
                                 <div className="space-y-5">
                                     <div className="space-y-2">
                                         <label htmlFor="college" className="text-xs font-bold text-gray-500 uppercase tracking-wider">College Name *</label>
-                                        <input
-                                            type="text"
+                                        <select
                                             id="college"
                                             name="college"
                                             value={formData.college}
-                                            onChange={handleChange}
-                                            className="w-full px-4 py-3.5 rounded-xl bg-[#fdf5f7]/50 border border-[#EBE5DB] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#f43f5e]/5 focus:border-[#f43f5e] transition-all placeholder:text-gray-400 text-gray-900 font-medium"
-                                            placeholder="Enter your college name"
-                                        />
+                                            onChange={(e) => {
+                                                const value = e.target.value;
+                                                setFormData(prev => ({
+                                                    ...prev,
+                                                    college: value,
+                                                    needsAccommodation: value === "KL University" ? false : prev.needsAccommodation
+                                                }));
+                                            }}
+                                            className="w-full px-4 py-3.5 rounded-xl bg-[#fdf5f7]/50 border border-[#EBE5DB] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#f43f5e]/5 focus:border-[#f43f5e] transition-all text-gray-900 font-medium cursor-pointer"
+                                        >
+                                            <option value="" disabled>Select your college</option>
+                                            <option value="KL University">KL University</option>
+                                            <option value="Others">Others</option>
+                                        </select>
                                     </div>
+
+                                    {formData.college === "Others" && (
+                                        <div className="space-y-2 animate-in fade-in slide-in-from-top-2 duration-300">
+                                            <label htmlFor="otherCollege" className="text-xs font-bold text-gray-500 uppercase tracking-wider">Please Specify College *</label>
+                                            <input
+                                                type="text"
+                                                id="otherCollege"
+                                                name="otherCollege"
+                                                onChange={(e) => setFormData(prev => ({ ...prev, college: e.target.value }))}
+                                                className="w-full px-4 py-3.5 rounded-xl bg-[#fdf5f7]/50 border border-[#EBE5DB] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#f43f5e]/5 focus:border-[#f43f5e] transition-all placeholder:text-gray-400 text-gray-900 font-medium"
+                                                placeholder="Enter your college name"
+                                            />
+                                        </div>
+                                    )}
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                         <div className="space-y-2">
@@ -256,26 +279,28 @@ export default function OnboardingPage() {
                                         </div>
                                     </div>
 
-                                    <div className="pt-3">
-                                        <div className="flex items-center gap-3">
-                                            <div className="relative flex items-center">
-                                                <input
-                                                    type="checkbox"
-                                                    id="needsAccommodation"
-                                                    name="needsAccommodation"
-                                                    checked={formData.needsAccommodation}
-                                                    onChange={(e) => setFormData(prev => ({ ...prev, needsAccommodation: e.target.checked }))}
-                                                    className="w-5 h-5 rounded border-[#EBE5DB] text-[#f43f5e] focus:ring-[#f43f5e] transition-all bg-[#fdf5f7]/50 cursor-pointer"
-                                                />
-                                            </div>
-                                            <div className="flex flex-col">
-                                                <label htmlFor="needsAccommodation" className="text-sm font-semibold text-[#1A1A1A] cursor-pointer">
-                                                    I require accommodation
-                                                </label>
-                                                <span className="text-xs text-gray-500">Check this box if you need us to arrange stay during the event.</span>
+                                    {formData.college !== "KL University" && formData.college !== "" && (
+                                        <div className="pt-3 animate-in fade-in slide-in-from-top-2 duration-300">
+                                            <div className="flex items-center gap-3">
+                                                <div className="relative flex items-center">
+                                                    <input
+                                                        type="checkbox"
+                                                        id="needsAccommodation"
+                                                        name="needsAccommodation"
+                                                        checked={formData.needsAccommodation}
+                                                        onChange={(e) => setFormData(prev => ({ ...prev, needsAccommodation: e.target.checked }))}
+                                                        className="w-5 h-5 rounded border-[#EBE5DB] text-[#f43f5e] focus:ring-[#f43f5e] transition-all bg-[#fdf5f7]/50 cursor-pointer"
+                                                    />
+                                                </div>
+                                                <div className="flex flex-col">
+                                                    <label htmlFor="needsAccommodation" className="text-sm font-semibold text-[#1A1A1A] cursor-pointer">
+                                                        I require accommodation
+                                                    </label>
+                                                    <span className="text-xs text-gray-500">Check this box if you need us to arrange stay during the event.</span>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    )}
 
                                 </div>
                             </motion.div>

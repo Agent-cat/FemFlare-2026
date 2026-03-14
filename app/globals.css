@@ -14,6 +14,7 @@
   src: url('/font/Milker.otf') format('opentype');
   font-weight: 900;
   font-style: bold;
+  font-display: swap;
 }
 
 @layer utilities {
@@ -22,3 +23,115 @@
     color: transparent;
   }
 }
+
+/* ─── Hero keyframes — GPU-composited (transform + opacity only) ─── */
+
+@keyframes anim-glow {
+  0%, 100% { transform: scale(1) translateZ(0); opacity: 0.7; }
+  50%       { transform: scale(1.15) translateZ(0); opacity: 1; }
+}
+
+@keyframes anim-glow2 {
+  0%, 100% { transform: scale(1) translateZ(0); opacity: 0.6; }
+  50%       { transform: scale(1.2) translateZ(0); opacity: 0.9; }
+}
+
+@keyframes anim-drift {
+  0%, 100% { transform: translate(0, 0) translateZ(0); opacity: 0.5; }
+  33%       { transform: translate(20px, -15px) translateZ(0); opacity: 0.8; }
+  66%       { transform: translate(-10px, 10px) translateZ(0); opacity: 0.6; }
+}
+
+@keyframes anim-float-x {
+  0%, 100% { transform: translateY(0) translateZ(0);  opacity: 0.6; }
+  25%       { transform: translateY(-12px) translateZ(0); opacity: 0.9; }
+  75%       { transform: translateY(8px) translateZ(0);  opacity: 0.7; }
+}
+
+@keyframes anim-dot {
+  0%, 100% { transform: scale(1) translateZ(0);   opacity: 0.6; }
+  50%       { transform: scale(1.6) translateZ(0); opacity: 1; }
+}
+
+@keyframes anim-twinkle {
+  0%, 100% { transform: scale(1) translateZ(0);   opacity: 0.5; }
+  50%       { transform: scale(1.5) translateZ(0); opacity: 1; }
+}
+
+@keyframes anim-ring {
+  0%   { transform: scale(1) translateZ(0);   opacity: 0.4; }
+  70%  { transform: scale(1.6) translateZ(0); opacity: 0; }
+  100% { transform: scale(1.6) translateZ(0); opacity: 0; }
+}
+
+@keyframes anim-star {
+  0%, 100% { transform: rotate(0deg) scale(1) translateZ(0);   opacity: 0.7; }
+  25%       { transform: rotate(10deg) scale(1.1) translateZ(0); opacity: 1; }
+  75%       { transform: rotate(-8deg) scale(0.9) translateZ(0); opacity: 0.6; }
+}
+
+@keyframes anim-star4 {
+  0%, 100% { transform: rotate(0deg) scale(1) translateZ(0);    opacity: 0.6; }
+  50%       { transform: rotate(45deg) scale(1.2) translateZ(0); opacity: 1; }
+}
+
+@keyframes anim-sparkle {
+  0%, 100% { transform: scale(0.8) translateZ(0); opacity: 0.4; }
+  40%       { transform: scale(1.2) translateZ(0); opacity: 1; }
+  70%       { transform: scale(0.9) translateZ(0); opacity: 0.7; }
+}
+
+@keyframes anim-diamond {
+  0%, 100% { transform: rotate(0deg) scale(1) translateZ(0);    opacity: 0.4; }
+  50%       { transform: rotate(180deg) scale(1.3) translateZ(0); opacity: 0.8; }
+}
+
+@keyframes anim-line {
+  0%, 100% { transform: scaleX(1) translateZ(0);   opacity: 0.3; }
+  50%       { transform: scaleX(1.4) translateZ(0); opacity: 0.6; }
+}
+
+@keyframes anim-plus {
+  0%, 100% { transform: translateY(0) scale(1) translateZ(0);  opacity: 0.3; }
+  50%       { transform: translateY(-6px) scale(1.1) translateZ(0); opacity: 0.6; }
+}
+
+@keyframes anim-cluster {
+  0%, 100% { transform: scale(1) translateZ(0);   opacity: 0.6; }
+  50%       { transform: scale(1.3) translateZ(0); opacity: 1; }
+}
+
+@keyframes scroll-bounce {
+  0%, 100% { transform: translateY(0) translateX(-50%); }
+  50%       { transform: translateY(6px) translateX(-50%); }
+}
+
+/* Scroll arrow bounce — uses class to avoid framer-motion inline style conflicts */
+.scroll-bounce-arrow {
+  animation: scroll-bounce 1.4s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* ─── Shimmer for hero image ─── */
+@keyframes hero-shimmer {
+  0%   { transform: translateX(-100%) skewX(-15deg) translateZ(0); }
+  100% { transform: translateX(200%) skewX(-15deg) translateZ(0); }
+}
+
+/* ─── Shared will-change helpers for composed animated layers ─── */
+.anim-layer {
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+}
+
+/* ─── Hero image mask (replaces inline <style jsx>) ─── */
+.hero-image-wrap {
+  --hero-mask: radial-gradient(circle, black 35%, transparent 85%);
+}
+
+@media (min-width: 768px) {
+  .hero-image-wrap {
+    --hero-mask: linear-gradient(to right, black 25%, transparent 100%);
+  }
+}
+

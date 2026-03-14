@@ -18,6 +18,9 @@ interface Event {
   termsAndConditions?: string | null;
   judgementCriteria?: string | null;
   image?: string | null;
+  _count?: {
+    registrations: number;
+  };
 }
 
 interface Category {
@@ -323,12 +326,18 @@ export default function EventManager({
 
                 {/* Actions */}
                 <div className="flex items-center gap-3 md:self-center border-t md:border-t-0 p-4 md:p-0 mt-2 md:mt-0 border-gray-50 w-full md:w-auto justify-end">
+                    <div className="flex items-center gap-2 mr-1">
+                        <span className="text-sm font-bold text-[#FF5722] bg-[#FF5722]/10 px-2.5 py-1 rounded-full flex items-center gap-1.5">
+                            <Users className="w-3.5 h-3.5" />
+                            {event._count?.registrations || 0} Students
+                        </span>
+                    </div>
                     <button
                         onClick={() => handleViewRegistrations(event.title, event.id)}
                         className="px-4 py-2 bg-gray-50 text-gray-700 rounded-lg text-xs font-semibold uppercase tracking-wide hover:bg-gray-100 transition-colors flex items-center gap-2"
                         title="View Registrations"
                     >
-                        <Users className="w-3.5 h-3.5" /> Registrations
+                         Registrations
                     </button>
 
                     <div className="flex gap-1">
