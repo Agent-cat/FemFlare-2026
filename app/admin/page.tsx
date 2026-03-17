@@ -17,16 +17,17 @@ export default function AdminDashboard() {
 
       if (res.success && res.users) {
           const data = res.users.map(user => ({
-              "User ID": user.id,
               "Name": user.name,
               "Email": user.email,
-              "Role": user.role,
               "Phone Number": user.phoneNumber || "N/A",
               "College": user.college || "N/A",
               "Student ID": user.studentId || "N/A",
               "Department": user.department || "N/A",
+              "Accommodation": user.needsAccommodation ? "Yes" : "No",
+              "Events": (user as any).registrations.map((r: any) => r.event.title).join(", ") || "No Events",
               "Address": user.address || "N/A",
               "Is Onboarded": user.isOnboarded ? "Yes" : "No",
+              "Role": user.role,
               "Joined At": new Date(user.createdAt).toLocaleString(),
           }));
 

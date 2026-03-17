@@ -16,8 +16,11 @@ export default function OnboardingGuard() {
         const publicPaths = ["/signin", "/signup", "/onboarding"];
         if (publicPaths.includes(pathname)) return;
 
-        if (session && session.user && !(session.user as any).isOnboarded) {
-            router.replace("/onboarding");
+        if (session && session.user) {
+            const user = session.user as any;
+            if (user.isOnboarded === false) {
+                router.replace("/onboarding");
+            }
         }
     }, [session, isPending, pathname, router]);
 

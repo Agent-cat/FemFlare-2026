@@ -1,9 +1,10 @@
-import React from 'react';
-import { Metadata } from 'next';
+"use client";
 
-export const metadata: Metadata = {
-  title: 'Events Data | Admin | FemFlare 2026',
-};
+import React, { useState } from 'react';
+import { Download } from 'lucide-react';
+import { getAllUsers } from '@/app/actions/user';
+import { downloadExcel } from '@/lib/excel';
+import { toast } from 'sonner';
 
 const eventsData = [
   {
@@ -78,15 +79,59 @@ const eventsData = [
 ];
 
 export default function EventsDataPage() {
+  const [isDownloading, setIsDownloading] = useState(false);
+
+  const handleDownloadReport = async () => {
+    setIsDownloading(true);
+    const toastId = toast.loading("Preparing report...");
+
+    const res = await getAllUsers();
+
+    if (res.success && res.users) {
+        const data = res.users.map(user => ({
+            "Name": user.name,
+            "Email": user.email,
+            "Phone Number": user.phoneNumber || "N/A",
+            "College": user.college || "N/A",
+            "Student ID": user.studentId || "N/A",
+            "Department": user.department || "N/A",
+            "Accommodation": user.needsAccommodation ? "Yes" : "No",
+            "Events Registered": (user as any).registrations.map((r: any) => r.event.title).join(", ") || "No Events",
+            "Joined At": new Date(user.createdAt).toLocaleString(),
+        }));
+
+        await downloadExcel(data, `FemFlare_Event_Registrations_${new Date().toISOString().split('T')[0]}`);
+        toast.success("Report downloaded successfully!", { id: toastId });
+    } else {
+        toast.error("Failed to fetch registration data", { id: toastId });
+    }
+    setIsDownloading(false);
+  };
+
   return (
     <div className="space-y-8 pb-20">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-oswald font-bold text-black uppercase tracking-tight">
-          Events Management Data
-        </h1>
-        <p className="text-gray-500 font-medium italic">
-          Comprehensive list of events, assigned volunteers, and contact information.
-        </p>
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div className="flex flex-col gap-2">
+          <h1 className="text-3xl font-oswald font-bold text-gray-900 uppercase tracking-tight">
+            Events Data & Registrations
+          </h1>
+          <p className="text-gray-500 font-medium italic">
+            Comprehensive list of events, assigned volunteers, and participant reports.
+          </p>
+        </div>
+
+        <button
+          onClick={handleDownloadReport}
+          disabled={isDownloading}
+          className="flex items-center justify-center gap-2 px-6 py-3 bg-[#FF5722] text-white font-bold font-oswald uppercase tracking-wide rounded-xl hover:bg-[#E64A19] transition-all shadow-lg hover:shadow-[#FF5722]/20 active:scale-95 disabled:opacity-70"
+        >
+          {isDownloading ? (
+            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+          ) : (
+            <Download className="w-5 h-5" />
+          )}
+          Download Registration Report
+        </button>
       </div>
 
       <div className="grid gap-12">

@@ -13,7 +13,7 @@ export default function AdminLayout({
         <AdminSidebar />
       </Suspense>
       {/* Main Content */}
-      <main className="flex-1 md:ml-64 p-4 md:p-8 pt-20 md:pt-8">
+      <main className="flex-1 md:ml-64 p-4 md:p-8 pt-24 md:pt-24">
         <Suspense fallback={<div className="flex h-screen items-center justify-center font-oswald text-[#FF5722] animate-pulse">Checking Permissions...</div>}>
             <AdminContentCheck>
                 {children}

@@ -2,8 +2,10 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Plus, Calendar, MapPin, ArrowLeft, Loader2, Edit2, Trash2, Image as ImageIcon, Users } from 'lucide-react';
+import { Plus, Calendar, MapPin, ArrowLeft, Loader2, Edit2, Trash2, Image as ImageIcon, Users, Download } from 'lucide-react';
 import { createEvent, deleteEvent, updateEvent, getEventRegistrations, getCategoryEvents } from '@/app/actions/events';
+import { downloadExcel } from '@/lib/excel';
+import { getAllUsers } from '@/app/actions/user';
 import { useInView } from 'react-intersection-observer';
 import RegistrationModal from './RegistrationModal';
 import { toast } from 'sonner';
@@ -145,6 +147,46 @@ export default function EventManager({
       setModalLoading(false);
   }
 
+  const [isDownloadingCategory, setIsDownloadingCategory] = useState(false);
+
+  async function handleDownloadCategory() {
+      setIsDownloadingCategory(true);
+      const toastId = toast.loading("Preparing category report...");
+      const res = await getAllUsers();
+
+      if (res.success && res.users) {
+          // Filter users who have registered for events in THIS category
+          const data = res.users
+              .filter(user => (user as any).registrations.some((r: any) => events.some(e => e.id === r.event.id)))
+              .map(user => ({
+                  "Name": user.name,
+                  "Email": user.email,
+                  "Phone": user.phoneNumber || "N/A",
+                  "College": user.college || "N/A",
+                  "Department": user.department || "N/A",
+                  "Student ID": user.studentId || "N/A",
+                  "Registered Events": (user as any).registrations
+                      .filter((r: any) => events.some(e => e.id === r.event.id))
+                      .map((r: any) => r.event.title)
+                      .join(", "),
+                  "Registration Dates": (user as any).registrations
+                      .filter((r: any) => events.some(e => e.id === r.event.id))
+                      .map((r: any) => new Date(r.createdAt).toLocaleString())
+                      .join(" | ")
+              }));
+
+          if (data.length === 0) {
+              toast.error("No registrations found for this category", { id: toastId });
+          } else {
+              await downloadExcel(data, `${category.title.replace(/\s+/g, '_')}_Full_Report`);
+              toast.success("Download started", { id: toastId });
+          }
+      } else {
+          toast.error("Failed to fetch data", { id: toastId });
+      }
+      setIsDownloadingCategory(false);
+  }
+
   function startEdit(event: Event) {
       setEditingEvent(event);
       setIsCreating(true);
@@ -177,13 +219,23 @@ export default function EventManager({
             <h1 className="text-4xl font-oswald font-bold text-gray-900 uppercase tracking-tight">Events in <span className="text-[#FF5722]">{category.title}</span></h1>
             <p className="text-gray-600 mt-2 font-sans text-lg">Manage events, details, and registrations for this category.</p>
         </div>
-        <button
-            onClick={() => { setIsCreating(true); setEditingEvent(null); }}
-            className="flex items-center gap-2 bg-[#FF5722] text-white px-6 py-3 rounded-full font-bold font-oswald uppercase tracking-wide hover:bg-[#F4511E] transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
-        >
-            <Plus className="w-5 h-5" />
-            New Event
-        </button>
+        <div className="flex flex-wrap gap-3">
+            <button
+                onClick={handleDownloadCategory}
+                disabled={isDownloadingCategory || events.length === 0}
+                className="flex items-center gap-2 bg-white text-gray-700 border border-gray-200 px-6 py-3 rounded-full font-bold font-oswald uppercase tracking-wide hover:bg-gray-50 transition-all shadow-sm hover:shadow-md disabled:opacity-50"
+            >
+                {isDownloadingCategory ? <Loader2 className="w-5 h-5 animate-spin text-[#FF5722]" /> : <Download className="w-5 h-5" />}
+                Download Category Report
+            </button>
+            <button
+                onClick={() => { setIsCreating(true); setEditingEvent(null); }}
+                className="flex items-center gap-2 bg-[#FF5722] text-white px-6 py-3 rounded-full font-bold font-oswald uppercase tracking-wide hover:bg-[#F4511E] transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+            >
+                <Plus className="w-5 h-5" />
+                New Event
+            </button>
+        </div>
       </div>
 
       {/* Create/Edit Form */}

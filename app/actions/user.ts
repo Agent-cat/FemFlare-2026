@@ -72,6 +72,16 @@ export async function getAllUsers() {
                 role: true,
                 createdAt: true,
                 isOnboarded: true,
+                needsAccommodation: true,
+                registrations: {
+                    select: {
+                        event: {
+                            select: {
+                                title: true
+                            }
+                        }
+                    }
+                }
             }
         });
         return { success: true, users };

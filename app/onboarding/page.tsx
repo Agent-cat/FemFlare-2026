@@ -21,14 +21,20 @@ export default function OnboardingPage() {
         needsAccommodation: false,
     });
     const [loading, setLoading] = useState(false);
+    const [isOtherCollege, setIsOtherCollege] = useState(false);
 
     useEffect(() => {
         if (!isPending && !session) {
             router.replace("/signin");
-        } else if ((session?.user as any)?.isOnboarded) {
+        } else if ((session?.user as any)?.isOnboarded === true) {
             router.replace("/");
         } else if (session?.user?.name) {
             setFormData(prev => ({ ...prev, name: session.user.name || "" }));
+        }
+
+        // Check if the user already has a college set that isn't KL University
+        if (session && (session.user as any)?.college && (session.user as any)?.college !== "KL University") {
+            setIsOtherCollege(true);
         }
     }, [session, isPending, router]);
 
@@ -221,14 +227,24 @@ export default function OnboardingPage() {
                                         <select
                                             id="college"
                                             name="college"
-                                            value={formData.college}
+                                            value={isOtherCollege ? "Others" : formData.college}
                                             onChange={(e) => {
                                                 const value = e.target.value;
-                                                setFormData(prev => ({
-                                                    ...prev,
-                                                    college: value,
-                                                    needsAccommodation: value === "KL University" ? false : prev.needsAccommodation
-                                                }));
+                                                if (value === "Others") {
+                                                    setIsOtherCollege(true);
+                                                    setFormData(prev => ({
+                                                        ...prev,
+                                                        college: "",
+                                                        needsAccommodation: prev.needsAccommodation
+                                                    }));
+                                                } else {
+                                                    setIsOtherCollege(false);
+                                                    setFormData(prev => ({
+                                                        ...prev,
+                                                        college: value,
+                                                        needsAccommodation: value === "KL University" ? false : prev.needsAccommodation
+                                                    }));
+                                                }
                                             }}
                                             className="w-full px-4 py-3.5 rounded-xl bg-[#fdf5f7]/50 border border-[#EBE5DB] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#f43f5e]/5 focus:border-[#f43f5e] transition-all text-gray-900 font-medium cursor-pointer"
                                         >
@@ -238,13 +254,14 @@ export default function OnboardingPage() {
                                         </select>
                                     </div>
 
-                                    {formData.college === "Others" && (
+                                    {isOtherCollege && (
                                         <div className="space-y-2 animate-in fade-in slide-in-from-top-2 duration-300">
                                             <label htmlFor="otherCollege" className="text-xs font-bold text-gray-500 uppercase tracking-wider">Please Specify College *</label>
                                             <input
                                                 type="text"
                                                 id="otherCollege"
                                                 name="otherCollege"
+                                                value={formData.college}
                                                 onChange={(e) => setFormData(prev => ({ ...prev, college: e.target.value }))}
                                                 className="w-full px-4 py-3.5 rounded-xl bg-[#fdf5f7]/50 border border-[#EBE5DB] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#f43f5e]/5 focus:border-[#f43f5e] transition-all placeholder:text-gray-400 text-gray-900 font-medium"
                                                 placeholder="Enter your college name"

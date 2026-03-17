@@ -8,7 +8,11 @@ export const auth = betterAuth({
         provider: "postgresql",
     }),
 
-    trustedOrigins: ["http://localhost:3000"],
+    trustedOrigins: [
+        process.env.BETTER_AUTH_URL as string,
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+    ],
     emailAndPassword: {
         enabled: true,
     },
@@ -58,7 +62,15 @@ export const auth = betterAuth({
                 defaultValue: false
             }
         }
+    },
+    session: {
+        expiresIn: 60 * 60 * 24 * 7, // 7 days
+        updateAge: 60 * 60 * 24, // 1 day
+        cookieCache: {
+            enabled: false, // Disable cache to prevent stale state after onboarding
+        }
+    },
+    advanced: {
+        useSecureCookies: process.env.NODE_ENV === "production",
     }
-
-
 });

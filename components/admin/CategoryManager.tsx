@@ -2,8 +2,10 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Plus, Folder, ArrowRight, Loader2, Trash2, Edit2, Image as ImageIcon } from 'lucide-react';
+import { Plus, Folder, ArrowRight, Loader2, Trash2, Edit2, Image as ImageIcon, Download } from 'lucide-react';
 import { createCategory, deleteCategory, updateCategory } from '@/app/actions/events';
+import { getAllUsers } from '@/app/actions/user';
+import { downloadExcel } from '@/lib/excel';
 import { toast } from 'sonner';
 
 interface Category {
@@ -21,6 +23,33 @@ export default function CategoryManager({ initialCategories }: { initialCategori
   const [isCreating, setIsCreating] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
+
+  async function handleDownloadAll() {
+    setIsDownloading(true);
+    const toastId = toast.loading("Fetching all registration data...");
+    const res = await getAllUsers();
+
+    if (res.success && res.users) {
+        const data = res.users.map(user => ({
+            "Name": user.name,
+            "Email": user.email,
+            "Phone": user.phoneNumber || "N/A",
+            "College": user.college || "N/A",
+            "Student ID": user.studentId || "N/A",
+            "Department": user.department || "N/A",
+            "Accommodation": user.needsAccommodation ? "Yes" : "No",
+            "Events Registered": (user as any).registrations?.map((r: any) => r.event.title).join(", ") || "No Events",
+            "Joined At": new Date(user.createdAt).toLocaleString(),
+        }));
+
+        await downloadExcel(data, `FemFlare_All_Registrations_${new Date().toISOString().split('T')[0]}`);
+        toast.success("Download started", { id: toastId });
+    } else {
+        toast.error("Failed to fetch data", { id: toastId });
+    }
+    setIsDownloading(false);
+  }
 
   async function handleSubmit(formData: FormData) {
     setIsLoading(true);
@@ -67,19 +96,34 @@ export default function CategoryManager({ initialCategories }: { initialCategori
   }
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-8">
-        <div>
-            <h1 className="text-4xl font-oswald font-bold text-gray-900 uppercase tracking-tight">Event Categories</h1>
-            <p className="text-gray-600 mt-2 font-sans text-lg">Manage your event categories and their contents.</p>
+    <div className="space-y-10">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-8 border-b border-[#DCCEB8]">
+        <div className="space-y-2">
+            <h1 className="text-4xl md:text-5xl font-oswald font-bold text-gray-900 uppercase tracking-tight leading-none">
+                Categories
+            </h1>
+            <p className="text-gray-500 font-medium font-sans flex items-center gap-2">
+               <span className="w-1.5 h-1.5 rounded-full bg-[#FF5722]" />
+               Manage your event tracks and participant data
+            </p>
         </div>
-        <button
-            onClick={() => { setIsCreating(true); setEditingCategory(null); }}
-            className="flex items-center gap-2 bg-[#FF5722] text-white px-6 py-3 rounded-full font-bold font-oswald uppercase tracking-wide hover:bg-[#F4511E] transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
-        >
-            <Plus className="w-5 h-5" />
-            New Category
-        </button>
+        <div className="flex flex-wrap items-center gap-4">
+            <button
+                onClick={handleDownloadAll}
+                disabled={isDownloading}
+                className="flex items-center gap-2.5 bg-white text-gray-700 border border-[#DCCEB8] px-6 py-3.5 rounded-2xl font-bold font-oswald uppercase tracking-wide hover:bg-[#F8F5F0] transition-all shadow-sm hover:shadow active:scale-95 disabled:opacity-50"
+            >
+                {isDownloading ? <Loader2 className="w-5 h-5 animate-spin text-[#FF5722]" /> : <Download className="w-5 h-5 text-[#FF5722]" />}
+                Export All Data
+            </button>
+            <button
+                onClick={() => { setIsCreating(true); setEditingCategory(null); }}
+                className="flex items-center gap-2.5 bg-[#FF5722] text-white px-7 py-3.5 rounded-2xl font-bold font-oswald uppercase tracking-wide hover:bg-[#F4511E] transition-all shadow-lg hover:shadow-[#FF5722]/30 hover:-translate-y-0.5 active:translate-y-0"
+            >
+                <Plus className="w-5 h-5" />
+                New Category
+            </button>
+        </div>
       </div>
 
       {/* Create/Edit Form */}
