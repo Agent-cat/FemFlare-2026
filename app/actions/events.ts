@@ -1,7 +1,7 @@
 "use server";
 
 import { prisma } from '@/lib/prisma';
-import { cacheTag, revalidateTag, unstable_cache } from 'next/cache';
+import { cacheTag, revalidateTag, unstable_cache, revalidatePath } from 'next/cache';
 import { saveFile } from '@/lib/upload';
 import slugify from 'slugify';
 
@@ -51,6 +51,8 @@ export async function createCategory(formData: FormData) {
     });
 
     revalidateTag('event-categories','max');
+    revalidatePath('/events');
+    revalidatePath('/admin/events');
     return { success: true };
   } catch (error) {
     console.error("Failed to create category:", error);
@@ -64,6 +66,8 @@ export async function deleteCategory(categoryId: string) {
             where: { id: categoryId }
         });
         revalidateTag('event-categories','max');
+        revalidatePath('/events');
+        revalidatePath('/admin/events');
         return { success: true };
     } catch (error) {
         console.error("Failed to delete category:", error);
@@ -96,6 +100,8 @@ export async function updateCategory(categoryId: string, formData: FormData) {
     });
 
     revalidateTag('event-categories','max');
+    revalidatePath('/events');
+    revalidatePath('/admin/events');
     return { success: true };
   } catch (error) {
     console.error("Failed to update category:", error);
@@ -147,6 +153,11 @@ export async function updateEvent(eventId: string, categoryId: string, formData:
     revalidateTag(`category-events-${categoryId}`,'max');
     revalidateTag('event-categories','max');
     revalidateTag(`event-${eventId}`,'max');
+    revalidatePath('/events');
+    revalidatePath(`/events/${categoryId}`);
+    revalidatePath(`/events/${categoryId}/${eventId}`);
+    revalidatePath('/admin/events');
+    revalidatePath(`/admin/events/${categoryId}`);
 
     return { success: true };
   } catch (error) {
@@ -235,8 +246,12 @@ export async function createEvent(formData: FormData) {
       },
     });
 
-    revalidateTag(`category-events-${categoryId}`, "max");
-    revalidateTag('event-categories', "max"); // Update counts
+    revalidateTag(`category-events-${categoryId}`,'max');
+    revalidateTag('event-categories','max'); // Update counts
+    revalidatePath('/events');
+    revalidatePath(`/events/${categoryId}`);
+    revalidatePath('/admin/events');
+    revalidatePath(`/admin/events/${categoryId}`);
 
     return { success: true };
   } catch (error) {
@@ -250,8 +265,12 @@ export async function deleteEvent(eventId: string, categoryId: string) {
         await prisma.event.delete({
             where: { id: eventId }
         });
-        revalidateTag(`category-events-${categoryId}`, "max");
+        revalidateTag(`category-events-${categoryId}`,'max');
         revalidateTag('event-categories','max');
+        revalidatePath('/events');
+        revalidatePath(`/events/${categoryId}`);
+        revalidatePath('/admin/events');
+        revalidatePath(`/admin/events/${categoryId}`);
         return { success: true };
     } catch (error) {
          console.error("Failed to delete event:", error);
@@ -337,6 +356,9 @@ export async function registerForEvent(userId: string, eventId: string) {
     revalidateTag(`user-registrations-${userId}`,'max');
     revalidateTag(`event-${eventId}`,'max');
     revalidateTag(`category-events-${newEvent.categoryId}`,'max');
+    revalidatePath(`/events/${newEvent.categoryId}`);
+    revalidatePath(`/events/${newEvent.categoryId}/${eventId}`);
+    revalidatePath(`/registered-events`);
     return { success: true };
   } catch (error: any) {
     if (error.code === 'P2002') {
@@ -402,7 +424,10 @@ export async function unregisterFromEvent(eventId: string, userId: string) {
         const event = await prisma.event.findUnique({ where: { id: eventId }, select: { categoryId: true } });
         if (event) {
             revalidateTag(`category-events-${event.categoryId}`,'max');
+            revalidatePath(`/events/${event.categoryId}`);
+            revalidatePath(`/events/${event.categoryId}/${eventId}`);
         }
+        revalidatePath(`/registered-events`);
 
         return { success: true };
     } catch (error) {

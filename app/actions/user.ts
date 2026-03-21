@@ -5,6 +5,8 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { connection } from "next/server";
 
+import { revalidatePath } from "next/cache";
+
 export async function updateUserOnboarding(formData: {
     phoneNumber: string;
     address?: string; // Optional if not required
@@ -36,6 +38,9 @@ export async function updateUserOnboarding(formData: {
                 isOnboarded: true,
             },
         });
+        revalidatePath("/");
+        revalidatePath("/events");
+        revalidatePath("/dashboard");
         return { success: true };
     } catch (error) {
         console.error("Error updating user onboarding:", error);

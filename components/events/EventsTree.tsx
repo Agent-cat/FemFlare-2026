@@ -117,7 +117,8 @@ export const EventsTree: React.FC<EventsTreeProps> = ({ data, registeredEventIds
                                 </h3>
                                 <div className="flex flex-wrap gap-4 mt-1 text-[13px] text-gray-500 font-medium">
                                     <span className="flex items-center gap-1.5 font-semibold">
-                                        <Calendar className="w-3.5 h-3.5" /> {formatDate(event.startDate)}
+                                        <Calendar className="w-3.5 h-3.5" /> {formatDate(event.startDate)}, {formatTime(event.startDate)}
+                                        {event.endDate && ` - ${formatTime(event.endDate)}`}b
                                     </span>
                                     {event.location && (
                                         <span className="flex items-center gap-1.5 opacity-80">
@@ -180,9 +181,20 @@ export const EventsTree: React.FC<EventsTreeProps> = ({ data, registeredEventIds
                                                         </div>
                                                         <div className="bg-black/5 p-4 rounded-xl border border-black/5">
                                                             <h5 className="text-[9px] font-bold uppercase tracking-[0.15em] text-gray-500 mb-2">Time</h5>
-                                                            <p className="text-[13px] font-bold text-gray-900 flex items-center gap-2">
-                                                                <Clock className="w-3.5 h-3.5 text-[#FF5722]" /> {formatTime(event.startDate)}
-                                                            </p>
+                                                            <div className="text-[13px] font-bold text-gray-900 space-y-1">
+                                                                <p className="flex items-center gap-2">
+                                                                    <Clock className="w-3.5 h-3.5 text-[#FF5722]" />
+                                                                    <span className="text-[10px] text-gray-500 uppercase tracking-widest mr-1">Start:</span>
+                                                                    {formatTime(event.startDate)}
+                                                                </p>
+                                                                {event.endDate && (
+                                                                    <p className="flex items-center gap-2">
+                                                                        <Clock className="w-3.5 h-3.5 text-transparent" /> {/* Spacer */}
+                                                                        <span className="text-[10px] text-gray-500 uppercase tracking-widest mr-1">End:</span>
+                                                                        {formatTime(event.endDate)}
+                                                                    </p>
+                                                                )}
+                                                            </div>
                                                         </div>
                                                     </div>
 

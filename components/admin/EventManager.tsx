@@ -201,7 +201,11 @@ export default function EventManager({
   }
 
   function formatDate(date: Date | string) {
-      return new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+      return new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  }
+
+  function formatTime(date: Date | string) {
+      return new Date(date).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
   }
 
   return (
@@ -364,7 +368,10 @@ export default function EventManager({
                         <div className="flex flex-col gap-1 text-sm text-gray-500">
                              <div className="flex items-center gap-2">
                                 <Calendar className="w-3.5 h-3.5 text-gray-400" />
-                                <span>{new Date(event.startDate).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
+                                <span>
+                                    {formatDate(event.startDate)}, {formatTime(event.startDate)}
+                                    {event.endDate && ` - ${formatTime(event.endDate)}`}
+                                </span>
                              </div>
                              {event.location && (
                                 <div className="flex items-center gap-2">

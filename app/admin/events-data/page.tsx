@@ -120,18 +120,51 @@ export default function EventsDataPage() {
           </p>
         </div>
 
-        <button
-          onClick={handleDownloadReport}
-          disabled={isDownloading}
-          className="flex items-center justify-center gap-2 px-6 py-3 bg-[#FF5722] text-white font-bold font-oswald uppercase tracking-wide rounded-xl hover:bg-[#E64A19] transition-all shadow-lg hover:shadow-[#FF5722]/20 active:scale-95 disabled:opacity-70"
-        >
-          {isDownloading ? (
-            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-          ) : (
-            <Download className="w-5 h-5" />
-          )}
-          Download Registration Report
-        </button>
+        <div className="flex flex-wrap gap-4">
+          <button
+            onClick={handleDownloadReport}
+            disabled={isDownloading}
+            className="flex items-center justify-center gap-2 px-6 py-3 bg-[#FF5722] text-white font-bold font-oswald uppercase tracking-wide rounded-xl hover:bg-[#E64A19] transition-all shadow-lg hover:shadow-[#FF5722]/20 active:scale-95 disabled:opacity-70"
+          >
+            {isDownloading ? (
+              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            ) : (
+              <Download className="w-5 h-5" />
+            )}
+            Download Excel Report
+          </button>
+          <button
+            onClick={async () => {
+              setIsDownloading(true);
+              const toastId = toast.loading("Preparing JSON report...");
+              const res = await getAllUsers();
+              if (res.success && res.users) {
+                  const blob = new Blob([JSON.stringify(res.users, null, 2)], { type: 'application/json' });
+                  const url = URL.createObjectURL(blob);
+                  const link = document.createElement('a');
+                  link.href = url;
+                  link.download = `FemFlare_Onboarding_Data_${new Date().toISOString().split('T')[0]}.json`;
+                  document.body.appendChild(link);
+                  link.click();
+                  document.body.removeChild(link);
+                  URL.revokeObjectURL(url);
+                  toast.success("JSON Report downloaded successfully!", { id: toastId });
+              } else {
+                  toast.error("Failed to fetch data", { id: toastId });
+              }
+              setIsDownloading(false);
+            }}
+            disabled={isDownloading}
+            className="flex items-center justify-center gap-2 px-6 py-3 bg-white text-[#FF5722] border-2 border-[#FF5722] font-bold font-oswald uppercase tracking-wide rounded-xl hover:bg-[#FF5722]/5 transition-all shadow-lg active:scale-95 disabled:opacity-70"
+          >
+            {isDownloading ? (
+              <div className="w-5 h-5 border-2 border-[#FF5722]/30 border-t-[#FF5722] rounded-full animate-spin" />
+            ) : (
+              <Download className="w-5 h-5" />
+            )}
+            Download JSON Report
+          </button>
+        </div>
       </div>
 
       <div className="grid gap-12">

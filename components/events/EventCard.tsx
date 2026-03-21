@@ -43,7 +43,33 @@ export const EventCard = ({ event, index, isRegistered = false }: { event: Event
   const colorClass = PASTEL_PALETTE[(index + 3) % PASTEL_PALETTE.length];
 
   const formatDate = (date: Date | string) => {
-      return new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      const d = new Date(date);
+      return d.toLocaleString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric',
+          hour: 'numeric',
+          minute: '2-digit',
+          hour12: true
+      });
+  };
+
+  const formatTime = (date: Date | string) => {
+      const d = new Date(date);
+      return d.toLocaleTimeString('en-US', {
+          hour: 'numeric',
+          minute: '2-digit',
+          hour12: true
+      });
+  };
+
+  const isSameDay = (d1: Date | string, d2: Date | string | null | undefined) => {
+      if (!d2) return false;
+      const date1 = new Date(d1);
+      const date2 = new Date(d2);
+      return date1.getFullYear() === date2.getFullYear() &&
+             date1.getMonth() === date2.getMonth() &&
+             date1.getDate() === date2.getDate();
   };
 
   return (
@@ -76,7 +102,13 @@ export const EventCard = ({ event, index, isRegistered = false }: { event: Event
             <div className="flex justify-between items-start mb-6">
                 <div className="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full shadow-xs">
                     <span className="text-xs font-bold uppercase tracking-wider text-gray-900 flex items-center gap-2">
-                        <Calendar className="w-3.5 h-3.5" /> {formatDate(event.startDate)}
+                        <Calendar className="w-3.5 h-3.5" />
+                        {formatDate(event.startDate)}
+                        {event.endDate && (
+                            isSameDay(event.startDate, event.endDate)
+                            ? ` - ${formatTime(event.endDate)}`
+                            : ` to ${formatDate(event.endDate)}`
+                        )}
                     </span>
                 </div>
                 {/* Registration Status Badge if registered */}

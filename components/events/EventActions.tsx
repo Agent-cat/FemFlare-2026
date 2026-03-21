@@ -16,12 +16,15 @@ export const EventActions = ({ event }: EventActionsProps) => {
   const [agreed, setAgreed] = useState(false);
 
   const formatDate = (date: Date | string) => {
-      return new Date(date).toLocaleDateString('en-US', {
+      const d = new Date(date);
+      return d.toLocaleString('en-US', {
           weekday: 'short',
           month: 'long',
           day: 'numeric',
+          year: 'numeric',
           hour: 'numeric',
-          minute: 'numeric'
+          minute: '2-digit',
+          hour12: true
       });
   };
 
@@ -33,7 +36,7 @@ export const EventActions = ({ event }: EventActionsProps) => {
                         <Calendar className="w-5 h-5" />
                     </div>
                     <div>
-                        <h3 className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-1">Start Date</h3>
+                        <h3 className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-1">Start</h3>
                         <p className="text-sm font-bold text-gray-900">{formatDate(event.startDate)}</p>
                     </div>
             </div>
@@ -44,7 +47,7 @@ export const EventActions = ({ event }: EventActionsProps) => {
                         <Calendar className="w-5 h-5" />
                     </div>
                     <div>
-                        <h3 className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-1">End Date</h3>
+                        <h3 className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-1">End</h3>
                          <p className="text-sm font-bold text-gray-900">{formatDate(event.endDate)}</p>
                     </div>
                 </div>

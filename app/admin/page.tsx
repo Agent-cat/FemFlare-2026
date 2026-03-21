@@ -53,7 +53,7 @@ export default function AdminDashboard() {
                     Welcome to the FemFlare Admin Panel. Manage your events, view registrations, and oversee the platform.
                 </p>
                 <div className="flex gap-4">
-                     <button
+                      <button
                         onClick={handleDownloadUsers}
                         disabled={isDownloading}
                         className="flex items-center gap-2 px-6 py-3 bg-[#1a1a1a] text-white font-bold font-oswald uppercase tracking-wide rounded-full hover:bg-black transition-all shadow-lg hover:shadow-xl disabled:opacity-70 disabled:cursor-not-allowed"
@@ -63,7 +63,39 @@ export default function AdminDashboard() {
                         ) : (
                             <Download className="w-5 h-5" />
                         )}
-                        Download All Users Data
+                        Download All Users Data (Excel)
+                     </button>
+                     <button
+                        onClick={async () => {
+                          setIsDownloading(true);
+                          const toastId = toast.loading("Fetching all users...");
+                          const res = await getAllUsers();
+                          if (res.success && res.users) {
+                            const data = JSON.stringify(res.users, null, 2);
+                            const blob = new Blob([data], { type: 'application/json' });
+                            const url = URL.createObjectURL(blob);
+                            const link = document.createElement('a');
+                            link.href = url;
+                            link.download = `FemFlare_Users_Data_${new Date().toISOString().split('T')[0]}.json`;
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                            URL.revokeObjectURL(url);
+                            toast.success("JSON Download started", { id: toastId });
+                          } else {
+                            toast.error("Failed to fetch users", { id: toastId });
+                          }
+                          setIsDownloading(false);
+                        }}
+                        disabled={isDownloading}
+                        className="flex items-center gap-2 px-6 py-3 bg-white text-[#1a1a1a] border-2 border-[#1a1a1a] font-bold font-oswald uppercase tracking-wide rounded-full hover:bg-gray-50 transition-all shadow-lg hover:shadow-xl disabled:opacity-70 disabled:cursor-not-allowed"
+                     >
+                        {isDownloading ? (
+                            <div className="w-5 h-5 border-2 border-[#1a1a1a]/30 border-t-[#1a1a1a] rounded-full animate-spin" />
+                        ) : (
+                            <Download className="w-5 h-5" />
+                        )}
+                        Download All Users Data (JSON)
                      </button>
                 </div>
             </div>
