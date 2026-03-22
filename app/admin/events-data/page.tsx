@@ -26,7 +26,7 @@ const eventsData = [
   {
     category: "NON-TECH EVENTS",
     events: [
-      { name: "Classical Dance & WESTERN- SOLO & GROUP", volunteers: "Sreehita", contact: "93472 86823" },
+      { name: "WESTERN- SOLO & GROUP", volunteers: "Sreehita", contact: "93472 86823" },
       { name: "Fashion Show", volunteers: "Sreehita", contact: "93472 86823" },
       { name: "Art & Painting", volunteers: "Sreehita", contact: "93472 86823" },
       { name: "Reel Queens – Reels CONTEST", volunteers: "Sreehita", contact: "93472 86823" },
@@ -73,7 +73,6 @@ const eventsData = [
       category: "OTHERS",
       events: [
           { name: "INFLUENCER MEET", volunteers: "Sreehita", contact: "93472 86823" },
-          { name: "CLASSICAL DANCE EVENT", volunteers: "-", contact: "-" },
       ]
   }
 ];

@@ -33,7 +33,7 @@ const eventStaffData = [
     category: "NON-TECH EVENTS",
     events: [
       {
-        name: "Classical Dance & WESTERN- SOLO & GROUP",
+        name: "WESTERN- SOLO & GROUP",
         volunteers: "Sreehita",
         contact: "93472 86823",
         faculty: "U. Kanaka Prasad",
@@ -110,11 +110,11 @@ const eventStaffData = [
   {
     category: "WORKSHOPS",
     events: [
-      { name: "AI Workshop", volunteers: "Sreehita", contact: "93472 86823" },
-      { name: "Face Painting", volunteers: "-", contact: "-" },
-      { name: "Vision Board", volunteers: "-", contact: "-" },
-      { name: "Nail workshop", volunteers: "-", contact: "-" },
-      { name: "POTTERY", volunteers: "-", contact: "-" },
+      { name: "AI Workshop", volunteers: "Sreehita", contact: "93472 86823", },
+      { name: "Face Painting", volunteers: "Sreehita", contact: "93472 86823", },
+      { name: "Vision Board", volunteers: "Sreehita", contact: "93472 86823", },
+      { name: "Nail workshop", volunteers: "Sreehita", contact: "93472 86823", },
+      { name: "POTTERY", volunteers: "Sreehita", contact: "93472 86823", },
     ]
   },
   {
@@ -147,7 +147,6 @@ const eventStaffData = [
     category: "OTHERS",
     events: [
       { name: "INFLUENCER MEET", volunteers: "Sreehita", contact: "93472 86823" },
-      { name: "CLASSICAL DANCE EVENT", volunteers: "-", contact: "-" },
     ]
   }
 ];
