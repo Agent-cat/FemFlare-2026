@@ -57,7 +57,7 @@ export default function RegistrationModal({ isOpen, onClose, eventName, registra
             "College": reg.user.college || (reg.user as any).college || "N/A",
             "Department": reg.user.department || (reg.user as any).department || "N/A",
             "Mobile": reg.user.phoneNumber || (reg.user as any).phoneNumber || "N/A",
-            "Registration Date": new Date(reg.createdAt).toLocaleString(),
+            "Registration Date": new Date(reg.createdAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
         }));
         downloadExcel(data, `${eventName.replace(/\s+/g, '_')}_Registrations`);
     };
@@ -133,7 +133,8 @@ export default function RegistrationModal({ isOpen, onClose, eventName, registra
                                                     month: 'short',
                                                     day: 'numeric',
                                                     hour: '2-digit',
-                                                    minute: '2-digit'
+                                                    minute: '2-digit',
+                                                    timeZone: 'Asia/Kolkata'
                                                 })}
                                             </div>
                                         </div>

@@ -128,7 +128,7 @@ export async function updateEvent(eventId: string, categoryId: string, formData:
   try {
     const data: any = {
         title,
-        startDate: new Date(startDateStr),
+        startDate: new Date(`${startDateStr}:00+05:30`),
         location,
         description,
         termsAndConditions: terms,
@@ -136,7 +136,7 @@ export async function updateEvent(eventId: string, categoryId: string, formData:
     };
 
     if (endDateStr) {
-        data.endDate = new Date(endDateStr);
+        data.endDate = new Date(`${endDateStr}:00+05:30`);
     } else {
         data.endDate = null;
     }
@@ -228,8 +228,8 @@ export async function createEvent(formData: FormData) {
     const slug = slugify(title, { lower: true, strict: true }) + '-' + Date.now().toString().slice(-4);
     const imageUrl = await saveFile(imageFile);
 
-    const startDate = new Date(startDateStr);
-    const endDate = endDateStr ? new Date(endDateStr) : null;
+    const startDate = new Date(`${startDateStr}:00+05:30`);
+    const endDate = endDateStr ? new Date(`${endDateStr}:00+05:30`) : null;
 
     await prisma.event.create({
       data: {

@@ -171,7 +171,7 @@ export default function EventManager({
                       .join(", "),
                   "Registration Dates": (user as any).registrations
                       .filter((r: any) => events.some(e => e.id === r.event.id))
-                      .map((r: any) => new Date(r.createdAt).toLocaleString())
+                      .map((r: any) => new Date(r.createdAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }))
                       .join(" | ")
               }));
 
@@ -196,16 +196,26 @@ export default function EventManager({
   function toDateTimeLocal(date: Date | string | null | undefined) {
       if (!date) return '';
       const d = new Date(date);
-      // Format: YYYY-MM-DDTHH:mm
-      return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+      // Explicitly use IST (+5:30) for input formatting
+      // IST is UTC + 330 minutes. Adding 330 minutes to UTC gives the numeric local time for ISO string format.
+      return new Date(d.getTime() + 330 * 60000).toISOString().slice(0, 16);
   }
 
   function formatDate(date: Date | string) {
-      return new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      return new Date(date).toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric',
+          timeZone: 'Asia/Kolkata'
+      });
   }
 
   function formatTime(date: Date | string) {
-      return new Date(date).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+      return new Date(date).toLocaleTimeString('en-US', {
+          hour: '2-digit',
+          minute: '2-digit',
+          timeZone: 'Asia/Kolkata'
+      });
   }
 
   return (

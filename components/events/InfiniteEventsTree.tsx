@@ -64,7 +64,8 @@ const InfiniteEventsTree: React.FC<InfiniteEventsTreeProps> = ({
       weekday: 'short',
       month: 'short',
       day: 'numeric',
-      year: 'numeric'
+      year: 'numeric',
+      timeZone: 'Asia/Kolkata'
     });
   };
 
@@ -72,7 +73,8 @@ const InfiniteEventsTree: React.FC<InfiniteEventsTreeProps> = ({
     const d = new Date(date);
     return d.toLocaleTimeString('en-US', {
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
+      timeZone: 'Asia/Kolkata'
     });
   };
 
