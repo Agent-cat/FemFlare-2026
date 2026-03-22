@@ -6,20 +6,74 @@ const eventStaffData = [
   {
     category: "TECHNICAL EVENTS",
     events: [
-      { name: "Debug&Win", volunteers: "Swaroopa", contact: "91825 36279" },
-      { name: "Code Queens–Competitive Coding", volunteers: "Sujana", contact: "63055 33476" },
-      { name: "App-It-Up–App Idea Pitch", volunteers: "Ambica", contact: "85208 22009" },
+      {
+        name: "Debug&Win",
+        volunteers: "Swaroopa",
+        contact: "91825 36279",
+        faculty: "Dr. I. Govardhani",
+        facultyContact: "9573548993"
+      },
+      {
+        name: "Code Queens–Competitive Coding",
+        volunteers: "Sujana",
+        contact: "63055 33476",
+        faculty: "Dr. Ch. Nagamani",
+        facultyContact: "9493485523"
+      },
+      {
+        name: "App-It-Up–App Idea Pitch",
+        volunteers: "Ambica",
+        contact: "85208 22009",
+        faculty: "Dr. P. Ramya",
+        facultyContact: "6300103003"
+      },
     ]
   },
   {
     category: "NON-TECH EVENTS",
     events: [
-      { name: "Classical Dance & WESTERN- SOLO & GROUP", volunteers: "Sreehita", contact: "93472 86823" },
-      { name: "Fashion Show", volunteers: "Sreehita", contact: "93472 86823" },
-      { name: "Art & Painting", volunteers: "Sreehita", contact: "93472 86823" },
-      { name: "Reel Queens – Reels CONTEST", volunteers: "Sreehita", contact: "93472 86823" },
-      { name: "Singing (VOCAL - SOLO)", volunteers: "Sreehita", contact: "93472 86823" },
-      { name: "IdeateHer", volunteers: "Sreehita", contact: "93472 86823" },
+      {
+        name: "Classical Dance & WESTERN- SOLO & GROUP",
+        volunteers: "Sreehita",
+        contact: "93472 86823",
+        faculty: "U. Kanaka Prasad",
+        facultyContact: "8297525793"
+      },
+      {
+        name: "Fashion Show",
+        volunteers: "Sreehita",
+        contact: "93472 86823",
+        faculty: "Dr. V. Lakshmi Lalitha",
+        facultyContact: "—"
+      },
+      {
+        name: "Art & Painting",
+        volunteers: "Sreehita",
+        contact: "93472 86823",
+        faculty: "Dr. R. Subhakar Raju",
+        facultyContact: "9912311170"
+      },
+      {
+        name: "Reel Queens – Reels CONTEST",
+        volunteers: "Sreehita",
+        contact: "93472 86823",
+        faculty: "Dr. V. Lakshmi Lalitha",
+        facultyContact: "—"
+      },
+      {
+        name: "Singing (VOCAL - SOLO)",
+        volunteers: "Sreehita",
+        contact: "93472 86823",
+        faculty: "Danam Cary Rayapati",
+        facultyContact: "7330872419"
+      },
+      {
+        name: "IdeateHer",
+        volunteers: "Sreehita",
+        contact: "93472 86823",
+        faculty: "Dr. T. Santhi Sri",
+        facultyContact: "9441085806"
+      },
     ]
   },
   {
@@ -37,7 +91,13 @@ const eventStaffData = [
       { name: "Logo Guess", volunteers: "Pravalika", contact: "73586 56704" },
       { name: "Paper Dress Challenge", volunteers: "Mahita", contact: "99663 39550" },
       { name: "Dumb Charades", volunteers: "Amukta", contact: "81850 95430" },
-      { name: "Rapid Rangoli", volunteers: "Mahita", contact: "99663 39550" },
+      {
+        name: "Rapid Rangoli",
+        volunteers: "Mahita",
+        contact: "99663 39550",
+        faculty: "Vijay Ratnam",
+        facultyContact: "8106079479"
+      },
     ]
   },
   {
@@ -60,9 +120,27 @@ const eventStaffData = [
   {
     category: "LITERATURE EVENTS",
     events: [
-      { name: "Debate Diva", volunteers: "Geethika", contact: "96421 80999" },
-      { name: "Blackout Poetry", volunteers: "Geethika", contact: "96421 80999" },
-      { name: "Turn the Page – Story Writing", volunteers: "Geethika", contact: "96421 80999" },
+      {
+        name: "Debate Diva",
+        volunteers: "Geethika",
+        contact: "96421 80999",
+        faculty: "Dr. Ch. Neelima",
+        facultyContact: "9052535399"
+      },
+      {
+        name: "Blackout Poetry",
+        volunteers: "Geethika",
+        contact: "96421 80999",
+        faculty: "Mrs. Sireesha",
+        facultyContact: "9704567827"
+      },
+      {
+        name: "Turn the Page – Story Writing",
+        volunteers: "Geethika",
+        contact: "96421 80999",
+        faculty: "Mrs. Sankari",
+        facultyContact: "7995847871"
+      },
     ]
   },
   {
@@ -109,38 +187,59 @@ export default function EventContactsPage() {
                     <div className="grid gap-4">
                         <div className="hidden sm:grid grid-cols-12 px-8 py-2 text-[10px] font-black font-oswald text-gray-400 uppercase tracking-widest border-b border-gray-100">
                             <div className="col-span-6">Event Name</div>
-                            <div className="col-span-3 text-center">Volunteers</div>
-                            <div className="col-span-3 text-right">Direct Contact</div>
+                            <div className="col-span-6 text-right">Event Coordinators</div>
                         </div>
 
-                        {section.events.map((event, idx) => (
+                        {section.events.map((event: any, idx) => (
                             <div
                                 key={idx}
                                 className="grid grid-cols-1 sm:grid-cols-12 items-center px-6 sm:px-8 py-5 rounded-2xl bg-white border border-gray-100 hover:border-[#FF5722]/30 hover:shadow-md transition-all group relative overflow-hidden"
                             >
                                 <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#FF5722]/0 group-hover:bg-[#FF5722] transition-all" />
 
-                                <div className="col-span-1 sm:col-span-6 mb-3 sm:mb-0">
-                                    <span className="font-bold text-lg text-[#1a1a1a] block group-hover:text-[#FF5722] transition-colors">
+                                <div className="col-span-1 sm:col-span-6 mb-4 sm:mb-0">
+                                    <span className="font-bold text-lg text-[#1a1a1a] block group-hover:text-[#FF5722] transition-colors leading-tight">
                                         {event.name}
                                     </span>
                                 </div>
-                                <div className="col-span-1 sm:col-span-3 sm:text-center mb-3 sm:mb-0">
-                                    <span className="text-sm sm:text-base text-gray-600 font-semibold bg-gray-50 px-3 py-1 rounded-lg">
-                                        {event.volunteers}
-                                    </span>
-                                </div>
-                                <div className="col-span-1 sm:col-span-3 flex justify-start sm:justify-end">
-                                    {event.contact !== "-" ? (
-                                        <a
-                                            href={`tel:${event.contact.replace(/\s+/g, '')}`}
-                                            className="flex items-center gap-3 text-sm font-black font-oswald text-[#FF5722] hover:scale-105 transition-transform bg-[#FF5722]/5 px-5 py-2 rounded-full border border-[#FF5722]/10 group-hover:bg-[#FF5722] group-hover:text-white group-hover:border-[#FF5722]"
-                                        >
-                                            <Phone className="w-3.5 h-3.5" />
-                                            {event.contact}
-                                        </a>
-                                    ) : (
-                                        <span className="text-gray-300 font-mono">-</span>
+
+                                <div className="col-span-1 sm:col-span-6 flex flex-col gap-2">
+                                    {/* Faculty Coordinator */}
+                                    {event.faculty && (
+                                        <div className="flex flex-wrap items-center justify-between gap-3 p-3 bg-[#FF5722]/5 rounded-xl border border-[#FF5722]/10 group/fac">
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-[9px] font-black bg-[#FF5722] text-white px-2 py-0.5 rounded uppercase tracking-tighter">Faculty</span>
+                                                <span className="font-bold text-gray-800 text-sm">{event.faculty}</span>
+                                            </div>
+                                            {event.facultyContact && event.facultyContact !== "—" && event.facultyContact !== "-" && (
+                                                <a
+                                                    href={`tel:${event.facultyContact.replace(/\s+/g, '')}`}
+                                                    className="flex items-center gap-2 text-[10px] font-black font-oswald text-[#FF5722] bg-white px-3 py-1.5 rounded-full border border-[#FF5722]/10 hover:bg-[#FF5722] hover:text-white transition-all shadow-sm"
+                                                >
+                                                    <Phone className="w-3 h-3" />
+                                                    {event.facultyContact}
+                                                </a>
+                                            )}
+                                        </div>
+                                    )}
+
+                                    {/* Student Volunteer */}
+                                    {event.volunteers && event.volunteers !== "-" && (
+                                        <div className="flex flex-wrap items-center justify-between gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100">
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-[9px] font-black bg-gray-400 text-white px-2 py-0.5 rounded uppercase tracking-tighter">Student</span>
+                                                <span className="font-semibold text-gray-600 text-sm">{event.volunteers}</span>
+                                            </div>
+                                            {event.contact && event.contact !== "-" && (
+                                                <a
+                                                    href={`tel:${event.contact.replace(/\s+/g, '')}`}
+                                                    className="flex items-center gap-2 text-[10px] font-black font-oswald text-gray-500 bg-white px-3 py-1.5 rounded-full border border-gray-200 hover:bg-gray-100 transition-all shadow-sm"
+                                                >
+                                                    <Phone className="w-3 h-3" />
+                                                    {event.contact}
+                                                </a>
+                                            )}
+                                        </div>
                                     )}
                                 </div>
                             </div>
