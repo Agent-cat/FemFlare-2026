@@ -57,10 +57,7 @@ export async function getAllUsers() {
         });
 
         if (!session || !session.user || (session.user as any).role !== "ADMIN") {
-             // In a real app we should enforce role check.
-             // Assuming session.user.role exists if using custom schema or typed session
-             // For now we'll allow but logged error if we were strict.
-             // Ideally: if (session?.user?.role !== "ADMIN") return { success: false, error: "Unauthorized" };
+            return { success: false, error: "Unauthorized" };
         }
 
         const users = await prisma.user.findMany({

@@ -32,6 +32,7 @@ const eventsData = [
       { name: "Reel Queens – Reels CONTEST", volunteers: "Sreehita", contact: "93472 86823" },
       { name: "Singing (VOCAL - SOLO)", volunteers: "Sreehita", contact: "93472 86823" },
       { name: "IdeateHer", volunteers: "Sreehita", contact: "93472 86823" },
+      { name: "Rapid Rangoli", volunteers: "Mahita", contact: "99663 39550" },
     ]
   },
   {
@@ -66,7 +67,6 @@ const eventsData = [
       { name: "Logo Guess", volunteers: "Pravalika", contact: "73586 56704" },
       { name: "Paper Dress Challenge", volunteers: "Mahita", contact: "99663 39550" },
       { name: "Dumb Charades", volunteers: "Amukta", contact: "81850 95430" },
-      { name: "Rapid Rangoli", volunteers: "Mahita", contact: "99663 39550" },
     ]
   },
   {

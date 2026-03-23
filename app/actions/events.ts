@@ -60,6 +60,8 @@ export async function createCategory(formData: FormData) {
   }
 }
 
+
+
 export async function deleteCategory(categoryId: string) {
     try {
         await prisma.eventCategory.delete({
@@ -301,13 +303,18 @@ export async function getEvent(eventId: string) {
 
 export async function registerForEvent(userId: string, eventId: string) {
   try {
-    // 1. Get the event details for the new registration
-    const newEvent = await prisma.event.findUnique({
-      where: { id: eventId }
-    });
+    // 1. Get the event and user details for the new registration
+    const [user, newEvent] = await Promise.all([
+        prisma.user.findUnique({ where: { id: userId }, select: { isOnboarded: true } }),
+        prisma.event.findUnique({ where: { id: eventId } })
+    ]);
 
     if (!newEvent) {
       return { success: false, error: "Event not found" };
+    }
+
+    if (!user?.isOnboarded) {
+        return { success: false, error: "Please complete your profile details (Onboarding) before registering for events." };
     }
 
     // 2. Check if already registered first to be safe
@@ -322,27 +329,44 @@ export async function registerForEvent(userId: string, eventId: string) {
     }
 
     // 3. Check for time clashes with other registrations of this user
-    const userRegistrations = await prisma.eventRegistration.findMany({
-        where: { userId },
-        include: { event: true }
-    });
-
     const newStart = new Date(newEvent.startDate);
     // If endDate is missing, assume a 2-hour duration for clash detection
     const newEnd = newEvent.endDate ? new Date(newEvent.endDate) : new Date(newStart.getTime() + 2 * 60 * 60 * 1000);
 
-    for (const reg of userRegistrations) {
-        const existEvent = reg.event;
-        const existStart = new Date(existEvent.startDate);
-        const existEnd = existEvent.endDate ? new Date(existEvent.endDate) : new Date(existStart.getTime() + 2 * 60 * 60 * 1000);
+    // Efficiently check for clashes directly in the database
+    const clash = await prisma.eventRegistration.findFirst({
+        where: {
+            userId,
+            event: {
+                OR: [
+                    // Case 1: Existing event has an end date
+                    {
+                        AND: [
+                            { endDate: { not: null } },
+                            { startDate: { lt: newEnd } },
+                            { endDate: { gt: newStart } }
+                        ]
+                    },
+                    // Case 2: Existing event has NO end date (assume 2 hour duration)
+                    {
+                        AND: [
+                            { endDate: null },
+                            { startDate: { lt: newEnd } },
+                            // If existStart + 2h > newStart, then existStart > newStart - 2h
+                            { startDate: { gt: new Date(newStart.getTime() - 2 * 60 * 60 * 1000) } }
+                        ]
+                    }
+                ]
+            }
+        },
+        include: { event: true }
+    });
 
-        // Overlap detection: (StartA < EndB) && (EndA > StartB)
-        if (newStart < existEnd && newEnd > existStart) {
-            return {
-                success: false,
-                error: `Time Clash! You have already registered for "${existEvent.title}" which overlaps with this event's schedule.`
-            };
-        }
+    if (clash) {
+        return {
+            success: false,
+            error: `Time Clash! You have already registered for "${clash.event.title}" which overlaps with this event's schedule.`
+        };
     }
 
     // 4. Create registration if no clash
@@ -356,6 +380,7 @@ export async function registerForEvent(userId: string, eventId: string) {
     revalidateTag(`user-registrations-${userId}`,'max');
     revalidateTag(`event-${eventId}`,'max');
     revalidateTag(`category-events-${newEvent.categoryId}`,'max');
+    revalidateTag('event-categories','max');
     revalidatePath(`/events/${newEvent.categoryId}`);
     revalidatePath(`/events/${newEvent.categoryId}/${eventId}`);
     revalidatePath(`/registered-events`);
@@ -424,6 +449,7 @@ export async function unregisterFromEvent(eventId: string, userId: string) {
         const event = await prisma.event.findUnique({ where: { id: eventId }, select: { categoryId: true } });
         if (event) {
             revalidateTag(`category-events-${event.categoryId}`,'max');
+            revalidateTag('event-categories','max');
             revalidatePath(`/events/${event.categoryId}`);
             revalidatePath(`/events/${event.categoryId}/${eventId}`);
         }

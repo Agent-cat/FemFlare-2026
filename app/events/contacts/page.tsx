@@ -74,6 +74,13 @@ const eventStaffData = [
         faculty: "Dr. T. Santhi Sri",
         facultyContact: "9441085806"
       },
+      {
+        name: "Rapid Rangoli",
+        volunteers: "Mahita",
+        contact: "99663 39550",
+        faculty: "Vijay Ratnam",
+        facultyContact: "8106079479"
+      },
     ]
   },
   {
@@ -91,13 +98,6 @@ const eventStaffData = [
       { name: "Logo Guess", volunteers: "Pravalika", contact: "73586 56704" },
       { name: "Paper Dress Challenge", volunteers: "Mahita", contact: "99663 39550" },
       { name: "Dumb Charades", volunteers: "Amukta", contact: "81850 95430" },
-      {
-        name: "Rapid Rangoli",
-        volunteers: "Mahita",
-        contact: "99663 39550",
-        faculty: "Vijay Ratnam",
-        facultyContact: "8106079479"
-      },
     ]
   },
   {

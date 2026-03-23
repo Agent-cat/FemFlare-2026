@@ -2,9 +2,10 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, MapPin, Share2, Heart } from 'lucide-react';
-import { getEvent } from '@/app/actions/events';
+import { getEvent, checkRegistrationStatus } from '@/app/actions/events';
+import { auth } from '@/lib/auth';
+import { headers } from 'next/headers';
 import Navbar from '@/components/layout/Navbar';
-import { redirect } from 'next/navigation';
 import { EventActions } from '@/components/events/EventActions';
 
 export default async function EventPage(props: {
@@ -12,7 +13,18 @@ export default async function EventPage(props: {
 }) {
   const params = await props.params;
 
-  const result = await getEvent(params.eventId);
+  const [session, result] = await Promise.all([
+    auth.api.getSession({ headers: await headers() }),
+    getEvent(params.eventId)
+  ]);
+
+  let isRegistered = false;
+  if (session?.user) {
+      const statusRes = await checkRegistrationStatus(params.eventId, session.user.id);
+      if (statusRes.success) {
+          isRegistered = !!statusRes.isRegistered;
+      }
+  }
 
   if (!result.success || !result.event) {
     return (
@@ -88,7 +100,11 @@ export default async function EventPage(props: {
                        </div>
 
                        {/* Right Sidebar / Details */}
-                       <EventActions event={event} />
+                       <EventActions
+                        event={event as any}
+                        userId={session?.user?.id}
+                        initialIsRegistered={isRegistered}
+                       />
                    </div>
                 </div>
             </div>
